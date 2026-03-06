@@ -20,6 +20,6 @@ def imprimirHola():
     print("Hola Nico y Jaco, como estas?")
 
 
-def imprimirHastaN(n):
+def imprimirHastaN(n, mensaje):
     for i in range(0, n):
-        print(f"numero: {n}")
+        print(f"{mensaje}: {n}")
