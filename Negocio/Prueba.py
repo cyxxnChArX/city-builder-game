@@ -5,7 +5,7 @@ def fibo(n):
         return fibo(n-1) + fibo(n-2)
     
 def imprimirHola():
-    print("Hola Mundo, como estas?")
+    print("Hola Nico y Jaco, como estas?")
 
 
 def imprimirHastaN(n):
