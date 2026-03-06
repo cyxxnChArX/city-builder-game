@@ -5,22 +5,3 @@ def fibo(n):
         return 2
     else:
         return fibo(n-1) + fibo(n) #quite el n-2 
-        return fibo(n-1) + fibo(n-2) + fibo(n-3)
-    
-def salutation():
-    print("Hola Mundo, como estas? La vida es buena de nuevo")
-    print("aaaaaaaaaa")
-    
-def imprimirHola():
-    print("cambio para dañar la linea 8")
-    print("git pull")
-    lista = [4]
-
-
-    print("Hola Mundo, como estas? La vida es buena")
-    print("Hola Nico y Jaco, como estas?")
-
-
-def imprimirHastaN(n):
-    for i in range(0, n):
-        print(f"numero: {n}")
