@@ -4,7 +4,16 @@ def fibo(n):
     else:
         return fibo(n-1) + fibo(n-2) + fibo(n-3)
     
+<<<<<<< HEAD
 def salutation():
+=======
+def imprimirHola():
+    print("cambio para dañar la linea 8")
+    print("git pull")
+    lista = [4]
+
+
+>>>>>>> 515d7eaa00cfb1898134779904af75d52286bf66
     print("Hola Mundo, como estas? La vida es buena")
     print("Hola Nico y Jaco, como estas?")
 
