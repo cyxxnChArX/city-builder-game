@@ -5,9 +5,9 @@ def fibo(n):
         return fibo(n-1) + fibo(n-2)
     
 def imprimirHola():
-    print("Hola Mundo, como estas?")
+    print("Hola Mundo, como estas? La vida es buena")
 
 
 def imprimirHastaN(n):
     for i in range(0, n):
-        print(f"numero: {i}")
+        print(f"numero: {n}")
