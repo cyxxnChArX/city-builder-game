@@ -10,9 +10,10 @@ def imprimirHola():
     lista = [4]
 
 
+    print("Hola Mundo, como estas? La vida es buena")
     print("Hola Nico y Jaco, como estas?")
 
 
 def imprimirHastaN(n):
     for i in range(0, n):
-        print(f"numero: {i}")
+        print(f"numero: {n}")
