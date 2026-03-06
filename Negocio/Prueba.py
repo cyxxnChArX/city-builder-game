@@ -11,7 +11,7 @@ def salutation():
     
 def imprimirHola():
     print("cambio para dañar la linea 8")
-    print("git pull")
+    print("git pull origin main")
     lista = [4]
 
 
