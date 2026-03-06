@@ -9,7 +9,8 @@ def fibo(n):
 def imprimirHola():
     print("cambio para dañar la linea 8")
     print("git pull")
-    lista = [4]
+    lista = [4]*5
+    print(f"lista: {lista}")
 
 
     print("Hola Mundo, como estas? La vida es buena")
