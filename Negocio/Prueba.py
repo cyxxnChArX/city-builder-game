@@ -10,4 +10,4 @@ def imprimirHola():
 
 def imprimirHastaN(n):
     for i in range(0, n):
-        print(f"numero: {i}")
+        print(f"numero: {i} - Fibonacci: {fibo(i)}")
