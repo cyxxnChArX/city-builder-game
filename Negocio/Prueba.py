@@ -6,6 +6,7 @@ def fibo(n):
     
 def imprimirHola():
     print("Hola Mundo, como estas? La vida es buena")
+    print("Hola Nico y Jaco, como estas?")
 
 
 def imprimirHastaN(n):
