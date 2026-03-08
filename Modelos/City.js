@@ -6,6 +6,7 @@ class City {
         this.region = ""; 
         this.turno = 1;
         this.puntaje = 0;
+        this.felicidadPromedio = 100;
         this.map = map; 
         this.resources = resources;
         this.citizens = [];
