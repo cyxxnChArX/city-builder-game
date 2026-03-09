@@ -73,7 +73,7 @@ class ScoringSystem {
         const bonuses = ScoringSystem.calculateBonuses(city);
         const penalties = ScoringSystem.calculatePenalties(city);
 
-        city.score =
+        city.puntaje =
             (population * 10) +
             (city.felicidadPromedio * 5) +
             Math.floor(city.resources.dinero / 100) +
@@ -83,7 +83,7 @@ class ScoringSystem {
             bonuses -
             penalties;
 
-        return city.score;
+        return city.puntaje;
     }
 }
 
