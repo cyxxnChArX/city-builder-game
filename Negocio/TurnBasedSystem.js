@@ -39,7 +39,7 @@ class TurnBasedSystem {
 
     executeTurn() {
 
-        this.city.turnoActual++;
+        this.city.turno++;
 
         this.calculateProduction();
 
@@ -66,35 +66,39 @@ class TurnBasedSystem {
 
             if (building instanceof CommercialBuilding) {
 
-                if (this.city.resources.electricidad > 0) {
-                    this.city.resources.dinero += building.ingreso;
+                if (this.city.resources.electricidad > building.consumoElectricidad) {
+                    this.city.resources.dinero += building.ingresoPorTurno;
                 }
 
             }
 
             if (building instanceof IndustrialBuilding) {
 
-                if (building.tipo === "factory") {
-                    this.city.resources.dinero += 800;
+                if ( this.city.resources.electricidad > 0 && this.city.resources.agua > 0) {
+
+                    if (building.tipo === IndustrialBuilding.TIPOS.FABRICA) {
+                        this.city.resources.dinero += building.produccionPorTurno;
+                    }
                 }
 
-                if (building.tipo === "farm") {
-                    this.city.resources.alimentos += 50;
+                if (building.tipo === IndustrialBuilding.TIPOS.GRANJA) {
+                    if (this.city.resources.agua > 0) {
+                        this.city.resources.alimentos += building.produccionPorTurno;
+                    }                    
                 }
 
             }
 
             if (building instanceof UtilityPlant) {
 
-                if (building.tipo === "electric") {
-                    this.city.resources.electricidad += 200;
+                if (building.tipo === UtilityPlant.TIPOS.PLANTA_ELECTRICA) {
+                    this.city.resources.electricidad += building.produccionElectricidad;
                 }
 
-                if (building.tipo === "water") {
+                if (building.tipo === UtilityPlant.TIPOS.PLANTA_AGUA) {
 
-                    if (this.city.resources.electricidad >= 20) {
-                        this.city.resources.agua += 150;
-                        this.city.resources.electricidad -= 20;
+                    if (this.city.resources.electricidad >= building.consumoElectricidad) {
+                        this.city.resources.agua += building.produccionAgua;
                     }
 
                 }
@@ -132,6 +136,7 @@ class TurnBasedSystem {
 
     applyMaintenance() {
 
+        //10 es un valor configurable
         let maintenanceCost = this.city.buildings.length * 10;
 
         this.city.resources.dinero -= maintenanceCost;
