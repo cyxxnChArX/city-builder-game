@@ -37,6 +37,18 @@ class ResidentialBuilding extends Building {
         this.residentes = [];
     }
 
+    // felicidad promedio por residencia cuando se ponga "ver informacion de la residencia"
+    calcularFelicidadPromedio() {
+        if (this.residentes.length === 0) {
+            return 0;
+        }
+        let total = 0;
+        for (let ciudadano of this.residentes) {
+            total += ciudadano.felicidad;
+        }
+        return total / this.residentes.length;
+    }
+
     agregarResidente(citizen) {
         if (this.residentes.length < this.capacidad) {
             this.residentes.push(citizen);
@@ -53,6 +65,14 @@ class ResidentialBuilding extends Building {
             }
         }
         this.residentes = nuevaLista;
+    }
+    
+    //elimina todos los residentes de un ResidentialBuilding 
+    eliminarResidentes() {
+        for (let ciudadano of this.residentes) {
+            ciudadano.removerVivienda();
+        }
+        this.residentes = [];
     }
 
 }

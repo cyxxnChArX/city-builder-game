@@ -66,7 +66,7 @@ class TurnBasedSystem {
 
             if (building instanceof CommercialBuilding) {
 
-                if (this.city.resources.electricidad > building.consumoElectricidad) {
+                if (this.city.resources.electricidad >= building.consumoElectricidad) {
                     this.city.resources.dinero += building.ingresoPorTurno;
                 }
 
@@ -77,8 +77,24 @@ class TurnBasedSystem {
                 if ( this.city.resources.electricidad > 0 && this.city.resources.agua > 0) {
 
                     if (building.tipo === IndustrialBuilding.TIPOS.FABRICA) {
-                        this.city.resources.dinero += building.produccionPorTurno;
+
+                        const electricidad = this.city.resources.electricidad;
+                        const agua = this.city.resources.agua;
+
+                        if (electricidad >= building.consumoElectricidad &&
+                            agua >= building.consumoAgua) {
+
+                            // producción completa osea del 100% 
+                            this.city.resources.dinero += building.produccionPorTurno;
+
+                        } else if (electricidad > 0 && agua > 0) {
+
+                            // producción reducida al 50% si no cumple con que agua o electricidad sea mayor a lo que consume
+                            this.city.resources.dinero += building.produccionPorTurno * 0.5;
+                        } 
+                        // si alguno es 0 sea cual sea no produce nada
                     }
+
                 }
 
                 if (building.tipo === IndustrialBuilding.TIPOS.GRANJA) {
@@ -135,12 +151,11 @@ class TurnBasedSystem {
     //==============================
 
     applyMaintenance() {
-
-        //10 es un valor configurable
-        let maintenanceCost = this.city.buildings.length * 10;
-
-        this.city.resources.dinero -= maintenanceCost;
-
+        let total = 0;
+        for (let building of this.city.buildings) {
+            total += building.costoMantenimiento;
+        }
+        this.city.resources.dinero -= total;
     }
 
     //==============================

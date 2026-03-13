@@ -57,7 +57,7 @@ class City {
         this.buildings = nuevaLista;
     }
 
-    agregarBuildingPorId(idBuilding) {
+    obtenerBuildingPorId(idBuilding) {
         for (let i = 0; i < this.buildings.length; i++) {
             if (this.buildings[i].id === idBuilding) {
                 return this.buildings[i];
@@ -74,44 +74,6 @@ class City {
 
     cantidadBuildings() {
         return this.buildings.length;
-    }
-
-    //construir una construccion/building y verificar si es via o si tiene una via adyacente 
-
-    construirBuilding(building, x, y) {
-
-        if (!this.map.esValida(x, y)) {
-            console.log("Posicion invalida");
-            return false;
-        }
-
-        if (!this.map.estaLibre(x, y)) {
-            console.log("La celda esta ocupada");
-            return false;
-        }
-
-        // Si no es Road, necesita via adyacente
-        if (!(building instanceof Road)) {
-
-            if (!this.map.hayViaAdyacente(x, y)) {
-                console.log("No se puede construir: falta via adyacente");
-                return false;
-            }
-        }
-
-        //si pasa las condiciones entonces:
-        
-        // Actualizar posicion del edificio
-        building.x = x;
-        building.y = y;
-
-        // Colocar en mapa
-        this.map.colocar(building, x, y);
-
-        // Agregar a la lista de edificios
-        this.agregarBuilding(building);
-
-        return true;
     }
 
 

@@ -9,6 +9,9 @@ class Building {
         this.costo = costo;
         this.x = x;
         this.y = y;
+        
+        // mantenimiento automatico para no definir una por una en cada clase
+        this.costoMantenimiento = costo / 100;
     }
 
 }

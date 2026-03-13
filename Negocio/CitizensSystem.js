@@ -143,6 +143,13 @@ class CitizensSystem {
         if (!ciudadano.tieneEmpleo()){
             felicidad -= 15;
         }
+        
+        //alimentos de la ciudad
+        if (city.resources.alimentos > city.citizens.length) {
+            felicidad += 10;
+        } else {
+            felicidad -= 10;
+        }
 
         for (let building of city.buildings) {
             if (building instanceof Park) {
