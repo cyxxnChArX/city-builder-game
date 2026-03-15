@@ -1,4 +1,4 @@
-class UtilityBuilding extends Building {
+class UtilityPlant extends Building {
 
     static TIPOS = {
         PLANTA_ELECTRICA: "planta_electrica",
@@ -12,10 +12,10 @@ class UtilityBuilding extends Building {
         let produccionAgua = 0;
         let consumoElectricidad = 0;
 
-        if (tipo === UtilityBuilding.TIPOS.PLANTA_ELECTRICA) {
+        if (tipo === UtilityPlant.TIPOS.PLANTA_ELECTRICA) {
             costo = 10000;
             produccionElectricidad = 200;
-        } else if (tipo === UtilityBuilding.TIPOS.PLANTA_AGUA) {
+        } else if (tipo === UtilityPlant.TIPOS.PLANTA_AGUA) {
             costo = 8000;
             produccionAgua = 150;
             consumoElectricidad = 20;

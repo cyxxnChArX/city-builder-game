@@ -1,5 +1,5 @@
 //Importación de clases necesarias
-import CitizenSystem from "./citizenSystem.js";
+import CitizensSystem from "./CitizensSystem.js";
 
 class ScoringSystem {
     // No posee constructor ya que solo tiene métodos estáticos
@@ -13,7 +13,7 @@ class ScoringSystem {
     // Método para contar ciudadanos desempleados
     static getUnemployedCount(citizens) {
         // Filter crea un nuevo array con los ciudadanos que no tienen empleo y luego se obtiene su longitud
-        return citizens.filter(citizen => citizen.job === "null" || citizen.job === null).length;
+        return citizens.filter(citizen => citizen.job === null).length;
     }
     
     // Método para verificar si todos los ciudadanos están empleados, solo se necesita saber si es False o True
@@ -64,9 +64,10 @@ class ScoringSystem {
     // Método para actualizar el puntaje de la ciudad
     //==========================================
 
-
+    //solo puede usarse con un objeto creado.
     static updateCityScore(city) {
-        city.felicidadPromedio = CitizenSystem.calcularFelicidadPromedio(city);
+        const citizenSystem = new CitizensSystem();
+        city.felicidadPromedio = citizenSystem.calcularFelicidadPromedio(city);
 
         const population = city.citizens.length;
         const numberOfBuildings = city.buildings.length;
