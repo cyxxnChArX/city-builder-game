@@ -1,0 +1,89 @@
+@media (max-width: 1399px) {
+  :root {
+    --grid-cell-size: 40px;
+  }
+}
+
+@media (max-width: 991px) {
+  .app-header {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .header-actions {
+    justify-content: flex-start;
+  }
+
+  .game-map-wrapper {
+    min-height: 520px;
+  }
+}
+
+@media (max-width: 767px) {
+  :root {
+    --grid-cell-size: 34px;
+  }
+
+  .panel,
+  .game-map-wrapper,
+  .top-status-bar,
+  .keyboard-shortcuts {
+    padding: 0.85rem;
+    border-radius: 14px;
+  }
+
+  .header-actions {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+  }
+
+  .map-toolbar {
+    flex-direction: column;
+    align-items: stretch;
+  }
+
+  .map-tools {
+    justify-content: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .news-list {
+    overflow-x: auto;
+    display: flex;
+    flex-direction: row;
+    gap: 1rem;
+    scroll-snap-type: x mandatory;
+  }
+
+  .news-item {
+    min-width: 260px;
+    scroll-snap-align: start;
+  }
+
+  dialog {
+    width: calc(100vw - 1rem);
+    border-radius: 14px;
+  }
+
+  menu {
+    flex-direction: column;
+  }
+}
+
+@media (max-width: 575px) {
+  .brand-area h1 {
+    font-size: 1.25rem;
+  }
+
+  .brand-area p {
+    font-size: 0.82rem;
+  }
+
+  .header-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .grid-cell {
+    border-radius: 6px;
+  }
+}

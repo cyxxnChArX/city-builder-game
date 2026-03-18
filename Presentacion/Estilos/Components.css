@@ -1,0 +1,264 @@
+.resource-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 14px;
+  padding: 0.9rem;
+  background: #f8fafc;
+  margin-bottom: 0.75rem;
+}
+
+.resource-card h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.35rem;
+}
+
+.resource-card p {
+  font-size: 0.88rem;
+  color: var(--secondary-text);
+}
+
+.money-card {
+  border-left: 6px solid var(--success);
+}
+
+.electricity-card {
+  border-left: 6px solid #f59e0b;
+}
+
+.water-card {
+  border-left: 6px solid #0ea5e9;
+}
+
+.food-card {
+  border-left: 6px solid #22c55e;
+}
+
+.population-card {
+  border-left: 6px solid #8b5cf6;
+}
+
+.happiness-card {
+  border-left: 6px solid #ec4899;
+}
+
+.score-card {
+  border-left: 6px solid #111827;
+}
+
+.construction-nav button {
+  border-radius: 12px;
+  font-weight: 700;
+}
+
+.construction-tab-panels {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.tab-panel {
+  display: grid;
+  gap: 0.85rem;
+}
+
+.tab-panel h3 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.build-card {
+  border: 1px solid #e2e8f0;
+  border-radius: 16px;
+  background: #f8fafc;
+}
+
+.build-card h4 {
+  font-size: 1rem;
+  font-weight: 700;
+}
+
+.build-card p {
+  font-size: 0.88rem;
+  color: var(--secondary-text);
+}
+
+.build-card button {
+  margin-top: 0.5rem;
+}
+
+.danger-card {
+  border-color: #f5c2c7;
+  background: #fff5f5;
+}
+
+.route-controls {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.6rem;
+  margin-bottom: 0.8rem;
+}
+
+.route-info {
+  display: grid;
+  gap: 0.5rem;
+}
+
+.route-info p {
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 12px;
+  padding: 0.7rem;
+  font-size: 0.9rem;
+}
+
+.grid-cell {
+  width: var(--grid-cell-size);
+  height: var(--grid-cell-size);
+  border: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 8px;
+  background: linear-gradient(180deg, #7bc96f 0%, #5fa553 100%);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.grid-cell:hover {
+  transform: scale(1.03);
+  box-shadow: inset 0 0 0 2px rgba(13, 110, 253, 0.4);
+}
+
+.notification-item {
+  border: 1px solid #e5eaf0;
+  border-left: 5px solid var(--primary);
+  border-radius: 12px;
+  padding: 0.85rem;
+  background: #f8fafc;
+  margin-bottom: 0.75rem;
+}
+
+.notification-item h3 {
+  font-size: 0.95rem;
+  margin-bottom: 0.3rem;
+}
+
+.notification-item p,
+.notification-item time {
+  font-size: 0.87rem;
+  color: var(--secondary-text);
+}
+
+.weather-widget {
+  display: grid;
+  gap: 0.6rem;
+}
+
+.weather-widget p {
+  background: #f8fafc;
+  border: 1px solid #e5eaf0;
+  border-radius: 12px;
+  padding: 0.75rem;
+  font-size: 0.9rem;
+}
+
+.news-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.news-item {
+  border: 1px solid #e5eaf0;
+  border-radius: 16px;
+  overflow: hidden;
+  background: #f8fafc;
+}
+
+.news-item img {
+  width: 100%;
+  height: 160px;
+  object-fit: cover;
+  background: #cbd5e1;
+}
+
+.news-content {
+  padding: 0.9rem;
+}
+
+.news-content h3 {
+  font-size: 1rem;
+  margin-bottom: 0.45rem;
+}
+
+.news-content p,
+.news-content small,
+.news-content a {
+  font-size: 0.88rem;
+}
+
+.news-content a {
+  display: inline-block;
+  margin-top: 0.45rem;
+  text-decoration: none;
+  font-weight: 700;
+}
+
+.news-content a:hover {
+  text-decoration: underline;
+}
+
+form {
+  padding: 1.25rem;
+}
+
+fieldset {
+  border: 1px solid #d7dee7;
+  border-radius: 14px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+legend {
+  padding: 0 0.45rem;
+  font-weight: 700;
+}
+
+menu {
+  display: flex;
+  justify-content: flex-end;
+  gap: 0.7rem;
+  padding: 0;
+  margin-top: 1rem;
+}
+
+kbd {
+  display: inline-block;
+  background: #111827;
+  color: #ffffff;
+  border-radius: 6px;
+  padding: 0.2rem 0.45rem;
+  font-size: 0.82rem;
+}
+
+.resource-card,
+.build-card,
+.news-item,
+.status-item,
+.notification-item,
+.weather-widget p {
+  width: 100%;
+}
+
+.resource-card h3,
+.resource-card p,
+.build-card h4,
+.build-card p,
+.status-item span,
+.status-item strong,
+.weather-widget p,
+.route-info p {
+  writing-mode: horizontal-tb;
+  word-break: normal;
+  overflow-wrap: break-word;
+  white-space: normal;
+}
+
+.btn:active {
+  transform: scale(0.98);
+}

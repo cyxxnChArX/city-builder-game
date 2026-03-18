@@ -1,0 +1,926 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>City Builder Game</title>
+  <meta name="description" content="Simulador urbano City Builder Game" />
+
+  <!-- Bootstrap CSS -->
+  <link
+    href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    rel="stylesheet"
+    integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH"
+    crossorigin="anonymous"
+  />
+
+  <!-- CSS propio -->
+  <link rel="stylesheet" href="../Estilos/Reset.css" />
+  <link rel="stylesheet" href="../Estilos/Layout.css" />
+  <link rel="stylesheet" href="../Estilos/Components.css" />
+  <link rel="stylesheet" href="../Estilos/Responsive.css" />
+</head>
+<body>
+  <!-- HEADER SUPERIOR -->
+  <header class="app-header container-fluid py-3" id="appHeader">
+    <div class="row g-3 align-items-center">
+      <div class="col-12 col-xl-3">
+        <div class="brand-area">
+          <h1 class="h2 mb-1">City Builder Game</h1>
+          <p class="mb-0">Simulador urbano de gestión y desarrollo de ciudad</p>
+        </div>
+      </div>
+
+      <div class="col-12 col-xl-5">
+        <div class="row g-2">
+          <div class="col-6 col-md-4">
+            <div class="status-pill">
+              <span>Ciudad</span>
+              <strong id="cityNameDisplay">Sin ciudad cargada</strong>
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <div class="status-pill">
+              <span>Alcalde</span>
+              <strong id="mayorNameDisplay">---</strong>
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <div class="status-pill">
+              <span>Turno</span>
+              <strong id="turnDisplay">0</strong>
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <div class="status-pill">
+              <span>Región</span>
+              <strong id="regionDisplay">---</strong>
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <div class="status-pill">
+              <span>Mapa</span>
+              <strong id="mapSizeDisplay">0 x 0</strong>
+            </div>
+          </div>
+          <div class="col-6 col-md-4">
+            <div class="status-pill">
+              <span>Modo</span>
+              <strong id="currentModeDisplay">Ninguno</strong>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-12 col-xl-4">
+        <div class="header-actions d-flex flex-wrap gap-2 justify-content-xl-end">
+          <button type="button" id="btnNewCity" data-action="new-city" class="btn btn-primary">
+            Nueva ciudad
+          </button>
+          <button type="button" id="btnContinueGame" data-action="continue-game" class="btn btn-outline-light">
+            Continuar
+          </button>
+          <button type="button" id="btnSaveGame" data-action="save-game" class="btn btn-success">
+            Guardar
+          </button>
+          <button type="button" id="btnExportCity" data-action="export-city" class="btn btn-warning">
+            Exportar
+          </button>
+          <button type="button" id="btnOpenRanking" data-action="open-ranking" class="btn btn-info">
+            Ranking
+          </button>
+          <button type="button" id="btnPauseTurn" data-action="pause-turn" class="btn btn-secondary">
+            Pausar
+          </button>
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <!-- BARRA RESUMIDA DE RECURSOS -->
+  <section class="resources-bar container-fluid py-2" id="resourcesBar" aria-label="Resumen de recursos">
+    <div class="row g-2">
+      <div class="col-6 col-md-4 col-xl">
+        <div class="resource-pill money-pill">
+          <span>Dinero</span>
+          <strong id="moneyValue">$50,000</strong>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl">
+        <div class="resource-pill electricity-pill">
+          <span>Electricidad</span>
+          <strong id="electricityValue">0</strong>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl">
+        <div class="resource-pill water-pill">
+          <span>Agua</span>
+          <strong id="waterValue">0</strong>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl">
+        <div class="resource-pill food-pill">
+          <span>Alimentos</span>
+          <strong id="foodValue">0</strong>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl">
+        <div class="resource-pill population-pill">
+          <span>Población</span>
+          <strong id="populationValue">0</strong>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl">
+        <div class="resource-pill happiness-pill">
+          <span>Felicidad</span>
+          <strong id="happinessValue">0</strong>
+        </div>
+      </div>
+      <div class="col-6 col-md-4 col-xl">
+        <div class="resource-pill score-pill">
+          <span>Puntuación</span>
+          <strong id="scoreValue">0</strong>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ZONA PRINCIPAL -->
+  <main class="game-stage container-fluid py-3" id="gameStage">
+    <section class="map-stage card shadow-sm" id="mapStage" aria-labelledby="gameMapTitle">
+      <div class="card-body p-3">
+        <div class="map-stage-header d-flex justify-content-between align-items-center gap-2 mb-3">
+          <h2 id="gameMapTitle" class="h4 mb-0">Mapa de la ciudad</h2>
+
+          <div class="map-tools d-flex flex-wrap gap-2">
+            <button type="button" id="btnZoomOut" data-action="zoom-out" class="btn btn-outline-secondary">-</button>
+            <button type="button" id="btnZoomIn" data-action="zoom-in" class="btn btn-outline-secondary">+</button>
+            <button type="button" id="btnCenterMap" data-action="center-map" class="btn btn-outline-primary">Centrar</button>
+            <button type="button" id="btnOpenScoreBreakdown" data-action="open-score-breakdown" class="btn btn-dark">
+              Ver desglose
+            </button>
+          </div>
+        </div>
+
+        <div class="map-scroll-container" id="mapScrollContainer">
+          <div
+            class="city-grid"
+            id="cityGrid"
+            role="grid"
+            aria-label="Mapa de celdas de la ciudad"
+            data-grid-width="20"
+            data-grid-height="20"
+          >
+            <button type="button" class="grid-cell" role="gridcell" data-x="0" data-y="0" data-cell-type="grass" aria-label="Celda 0 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="1" data-y="0" data-cell-type="grass" aria-label="Celda 1 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="2" data-y="0" data-cell-type="grass" aria-label="Celda 2 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="3" data-y="0" data-cell-type="grass" aria-label="Celda 3 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="4" data-y="0" data-cell-type="grass" aria-label="Celda 4 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="5" data-y="0" data-cell-type="grass" aria-label="Celda 5 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="6" data-y="0" data-cell-type="grass" aria-label="Celda 6 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="7" data-y="0" data-cell-type="grass" aria-label="Celda 7 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="8" data-y="0" data-cell-type="grass" aria-label="Celda 8 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="9" data-y="0" data-cell-type="grass" aria-label="Celda 9 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="10" data-y="0" data-cell-type="grass" aria-label="Celda 10 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="11" data-y="0" data-cell-type="grass" aria-label="Celda 11 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="12" data-y="0" data-cell-type="grass" aria-label="Celda 12 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="13" data-y="0" data-cell-type="grass" aria-label="Celda 13 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="14" data-y="0" data-cell-type="grass" aria-label="Celda 14 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="15" data-y="0" data-cell-type="grass" aria-label="Celda 15 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="16" data-y="0" data-cell-type="grass" aria-label="Celda 16 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="17" data-y="0" data-cell-type="grass" aria-label="Celda 17 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="18" data-y="0" data-cell-type="grass" aria-label="Celda 18 0 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="19" data-y="0" data-cell-type="grass" aria-label="Celda 19 0 terreno vacío"></button>
+
+            <button type="button" class="grid-cell" role="gridcell" data-x="0" data-y="1" data-cell-type="grass" aria-label="Celda 0 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="1" data-y="1" data-cell-type="grass" aria-label="Celda 1 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="2" data-y="1" data-cell-type="grass" aria-label="Celda 2 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="3" data-y="1" data-cell-type="grass" aria-label="Celda 3 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="4" data-y="1" data-cell-type="grass" aria-label="Celda 4 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="5" data-y="1" data-cell-type="grass" aria-label="Celda 5 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="6" data-y="1" data-cell-type="grass" aria-label="Celda 6 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="7" data-y="1" data-cell-type="grass" aria-label="Celda 7 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="8" data-y="1" data-cell-type="grass" aria-label="Celda 8 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="9" data-y="1" data-cell-type="grass" aria-label="Celda 9 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="10" data-y="1" data-cell-type="grass" aria-label="Celda 10 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="11" data-y="1" data-cell-type="grass" aria-label="Celda 11 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="12" data-y="1" data-cell-type="grass" aria-label="Celda 12 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="13" data-y="1" data-cell-type="grass" aria-label="Celda 13 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="14" data-y="1" data-cell-type="grass" aria-label="Celda 14 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="15" data-y="1" data-cell-type="grass" aria-label="Celda 15 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="16" data-y="1" data-cell-type="grass" aria-label="Celda 16 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="17" data-y="1" data-cell-type="grass" aria-label="Celda 17 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="18" data-y="1" data-cell-type="grass" aria-label="Celda 18 1 terreno vacío"></button>
+            <button type="button" class="grid-cell" role="gridcell" data-x="19" data-y="1" data-cell-type="grass" aria-label="Celda 19 1 terreno vacío"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <!-- BOTONES FLOTANTES -->
+  <div class="floating-controls">
+    <button
+      type="button"
+      class="btn btn-primary floating-btn floating-btn-left"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#leftGamePanel"
+      aria-controls="leftGamePanel"
+      id="btnOpenLeftPanel"
+    >
+      Construcción
+    </button>
+
+    <button
+      type="button"
+      class="btn btn-dark floating-btn floating-btn-right"
+      data-bs-toggle="offcanvas"
+      data-bs-target="#rightInfoPanel"
+      aria-controls="rightInfoPanel"
+      id="btnOpenRightPanel"
+    >
+      Información
+    </button>
+  </div>
+
+  <!-- OFFCANVAS IZQUIERDO -->
+  <div class="offcanvas offcanvas-start" tabindex="-1" id="leftGamePanel" aria-labelledby="leftGamePanelLabel">
+    <div class="offcanvas-header">
+      <h2 class="offcanvas-title h4" id="leftGamePanelLabel">Construcción y acciones</h2>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+
+    <div class="offcanvas-body">
+      <section class="mb-4">
+        <div class="d-flex flex-wrap gap-2 mb-3">
+          <button type="button" id="btnCancelMode" data-action="cancel-mode" class="btn btn-outline-secondary">Cancelar modo</button>
+          <button type="button" id="btnDemolishMode" data-action="demolish-mode" class="btn btn-danger">Demoler</button>
+          <button type="button" id="btnStartRouteMode" data-action="start-route-mode" class="btn btn-primary">Calcular ruta</button>
+          <button type="button" id="btnClearRoute" data-action="clear-route" class="btn btn-outline-secondary">Limpiar ruta</button>
+        </div>
+
+        <div class="route-info d-grid gap-2 mb-4">
+          <p id="routeOriginText" class="mb-0">Origen: sin seleccionar</p>
+          <p id="routeDestinationText" class="mb-0">Destino: sin seleccionar</p>
+          <p id="routeStatusText" class="mb-0">Estado: inactivo</p>
+        </div>
+      </section>
+
+      <section class="mb-4">
+        <h3 class="h5 mb-3">Categorías</h3>
+        <div class="row g-2 construction-nav">
+          <div class="col-6">
+            <button type="button" id="tabResidential" data-tab-target="residentialTabPanel" class="btn btn-outline-primary w-100">
+              Residencial
+            </button>
+          </div>
+          <div class="col-6">
+            <button type="button" id="tabCommercial" data-tab-target="commercialTabPanel" class="btn btn-outline-primary w-100">
+              Comercial
+            </button>
+          </div>
+          <div class="col-6">
+            <button type="button" id="tabIndustrial" data-tab-target="industrialTabPanel" class="btn btn-outline-primary w-100">
+              Industrial
+            </button>
+          </div>
+          <div class="col-6">
+            <button type="button" id="tabServices" data-tab-target="servicesTabPanel" class="btn btn-outline-primary w-100">
+              Servicios
+            </button>
+          </div>
+          <div class="col-6">
+            <button type="button" id="tabUtilities" data-tab-target="utilitiesTabPanel" class="btn btn-outline-primary w-100">
+              Utilidades
+            </button>
+          </div>
+          <div class="col-6">
+            <button type="button" id="tabParksRoads" data-tab-target="parksRoadsTabPanel" class="btn btn-outline-primary w-100">
+              Parques y vías
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <div class="construction-tab-panels d-grid gap-4">
+        <section class="tab-panel" id="residentialTabPanel" aria-labelledby="tabResidential">
+          <h3 class="h5">Edificios residenciales</h3>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Casa</h4>
+              <p class="mb-1">Capacidad: 4 ciudadanos</p>
+              <p class="mb-1">Costo: $1,000</p>
+              <p class="mb-1">Electricidad: 5 u/turno</p>
+              <p class="mb-3">Agua: 3 u/turno</p>
+              <button type="button" data-build-type="house" class="btn btn-primary w-100">Construir Casa</button>
+            </div>
+          </article>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Apartamento</h4>
+              <p class="mb-1">Capacidad: 12 ciudadanos</p>
+              <p class="mb-1">Costo: $3,000</p>
+              <p class="mb-1">Electricidad: 15 u/turno</p>
+              <p class="mb-3">Agua: 10 u/turno</p>
+              <button type="button" data-build-type="apartment" class="btn btn-primary w-100">Construir Apartamento</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="tab-panel" id="commercialTabPanel" aria-labelledby="tabCommercial">
+          <h3 class="h5">Edificios comerciales</h3>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Tienda</h4>
+              <p class="mb-1">Empleos: 6</p>
+              <p class="mb-1">Costo: $2,000</p>
+              <p class="mb-1">Ingreso: $500/turno</p>
+              <p class="mb-3">Electricidad: 8 u/turno</p>
+              <button type="button" data-build-type="shop" class="btn btn-primary w-100">Construir Tienda</button>
+            </div>
+          </article>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Centro Comercial</h4>
+              <p class="mb-1">Empleos: 20</p>
+              <p class="mb-1">Costo: $8,000</p>
+              <p class="mb-1">Ingreso: $2,000/turno</p>
+              <p class="mb-3">Electricidad: 25 u/turno</p>
+              <button type="button" data-build-type="mall" class="btn btn-primary w-100">Construir Centro Comercial</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="tab-panel" id="industrialTabPanel" aria-labelledby="tabIndustrial">
+          <h3 class="h5">Edificios industriales</h3>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Fábrica</h4>
+              <p class="mb-1">Empleos: 15</p>
+              <p class="mb-1">Costo: $5,000</p>
+              <p class="mb-1">Producción: $800/turno</p>
+              <p class="mb-3">Consumo: 20 electricidad + 15 agua</p>
+              <button type="button" data-build-type="factory" class="btn btn-primary w-100">Construir Fábrica</button>
+            </div>
+          </article>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Granja</h4>
+              <p class="mb-1">Empleos: 8</p>
+              <p class="mb-1">Costo: $3,000</p>
+              <p class="mb-1">Producción: 50 alimentos/turno</p>
+              <p class="mb-3">Consumo: 10 agua</p>
+              <button type="button" data-build-type="farm" class="btn btn-primary w-100">Construir Granja</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="tab-panel" id="servicesTabPanel" aria-labelledby="tabServices">
+          <h3 class="h5">Edificios de servicio</h3>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Estación de Policía</h4>
+              <p class="mb-1">Costo: $4,000</p>
+              <p class="mb-1">Radio: 5 celdas</p>
+              <p class="mb-1">Beneficio: +10 felicidad</p>
+              <p class="mb-3">Consumo: 15 electricidad</p>
+              <button type="button" data-build-type="police" class="btn btn-primary w-100">Construir Policía</button>
+            </div>
+          </article>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Estación de Bomberos</h4>
+              <p class="mb-1">Costo: $4,000</p>
+              <p class="mb-1">Radio: 5 celdas</p>
+              <p class="mb-1">Beneficio: +10 felicidad</p>
+              <p class="mb-3">Consumo: 15 electricidad</p>
+              <button type="button" data-build-type="firestation" class="btn btn-primary w-100">Construir Bomberos</button>
+            </div>
+          </article>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Hospital</h4>
+              <p class="mb-1">Costo: $6,000</p>
+              <p class="mb-1">Radio: 7 celdas</p>
+              <p class="mb-1">Beneficio: +10 felicidad</p>
+              <p class="mb-3">Consumo: 20 electricidad + 10 agua</p>
+              <button type="button" data-build-type="hospital" class="btn btn-primary w-100">Construir Hospital</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="tab-panel" id="utilitiesTabPanel" aria-labelledby="tabUtilities">
+          <h3 class="h5">Plantas de utilidad</h3>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Planta Eléctrica</h4>
+              <p class="mb-1">Costo: $10,000</p>
+              <p class="mb-1">Producción: 200 electricidad/turno</p>
+              <p class="mb-3">Consumo: ninguno</p>
+              <button type="button" data-build-type="power-plant" class="btn btn-primary w-100">Construir Planta Eléctrica</button>
+            </div>
+          </article>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Planta de Agua</h4>
+              <p class="mb-1">Costo: $8,000</p>
+              <p class="mb-1">Producción: 150 agua/turno</p>
+              <p class="mb-3">Consumo: 20 electricidad/turno</p>
+              <button type="button" data-build-type="water-plant" class="btn btn-primary w-100">Construir Planta de Agua</button>
+            </div>
+          </article>
+        </section>
+
+        <section class="tab-panel" id="parksRoadsTabPanel" aria-labelledby="tabParksRoads">
+          <h3 class="h5">Parques y vías</h3>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Parque</h4>
+              <p class="mb-1">Costo: $1,500</p>
+              <p class="mb-3">Beneficio: +5 felicidad</p>
+              <button type="button" data-build-type="park" class="btn btn-primary w-100">Construir Parque</button>
+            </div>
+          </article>
+
+          <article class="build-card card">
+            <div class="card-body">
+              <h4 class="h5">Vía</h4>
+              <p class="mb-1">Costo: $100 por celda</p>
+              <p class="mb-3">Función: conectar edificios</p>
+              <button type="button" data-build-type="road" class="btn btn-primary w-100">Construir Vía</button>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+  </div>
+
+  <!-- OFFCANVAS DERECHO -->
+  <div class="offcanvas offcanvas-end" tabindex="-1" id="rightInfoPanel" aria-labelledby="rightInfoPanelLabel">
+    <div class="offcanvas-header">
+      <h2 class="offcanvas-title h4" id="rightInfoPanelLabel">Información de ciudad</h2>
+      <button type="button" class="btn-close" data-bs-dismiss="offcanvas" aria-label="Cerrar"></button>
+    </div>
+
+    <div class="offcanvas-body">
+      <section class="mb-4">
+        <h3 class="h5 mb-3">Clima</h3>
+        <div class="d-flex justify-content-end mb-3">
+          <button type="button" id="btnRefreshWeather" data-action="refresh-weather" class="btn btn-outline-primary">
+            Actualizar
+          </button>
+        </div>
+
+        <div class="weather-widget d-grid gap-2">
+          <p class="mb-0">Ciudad real asociada: <strong id="weatherCityName">---</strong></p>
+          <p class="mb-0">Temperatura: <strong id="weatherTemp">-- °C</strong></p>
+          <p class="mb-0">Condición: <strong id="weatherCondition">---</strong></p>
+          <p class="mb-0">Humedad: <strong id="weatherHumidity">-- %</strong></p>
+          <p class="mb-0">Viento: <strong id="weatherWind">-- km/h</strong></p>
+          <p class="mb-0">Última actualización: <strong id="weatherUpdatedAt">---</strong></p>
+        </div>
+      </section>
+
+      <section class="mb-4">
+        <h3 class="h5 mb-3">Ciudadanos</h3>
+        <ul class="list-group mb-3">
+          <li class="list-group-item">Total: <strong id="citizensTotal">0</strong></li>
+          <li class="list-group-item">Con vivienda: <strong id="citizensWithHousing">0</strong></li>
+          <li class="list-group-item">Sin vivienda: <strong id="citizensWithoutHousing">0</strong></li>
+          <li class="list-group-item">Con empleo: <strong id="citizensWithJob">0</strong></li>
+          <li class="list-group-item">Sin empleo: <strong id="citizensWithoutJob">0</strong></li>
+          <li class="list-group-item">Felicidad promedio: <strong id="citizensAverageHappiness">0</strong></li>
+        </ul>
+
+        <button type="button" id="btnOpenCitizensModal" data-action="open-citizens-modal" class="btn btn-primary w-100">
+          Ver listado de ciudadanos
+        </button>
+      </section>
+
+      <section class="mb-4">
+        <h3 class="h5 mb-3">Estadísticas</h3>
+        <ul class="list-group">
+          <li class="list-group-item">Total de edificios: <strong id="totalBuildingsValue">0</strong></li>
+          <li class="list-group-item">Residenciales: <strong id="residentialBuildingsValue">0</strong></li>
+          <li class="list-group-item">Comerciales: <strong id="commercialBuildingsValue">0</strong></li>
+          <li class="list-group-item">Industriales: <strong id="industrialBuildingsValue">0</strong></li>
+          <li class="list-group-item">Servicios: <strong id="serviceBuildingsValue">0</strong></li>
+          <li class="list-group-item">Parques: <strong id="parksValue">0</strong></li>
+          <li class="list-group-item">Vías: <strong id="roadsValue">0</strong></li>
+          <li class="list-group-item">Capacidad residencial: <strong id="housingCapacityValue">0</strong></li>
+          <li class="list-group-item">Empleos disponibles: <strong id="jobCapacityValue">0</strong></li>
+        </ul>
+      </section>
+
+      <section>
+        <div class="d-flex justify-content-between align-items-center mb-3">
+          <h3 class="h5 mb-0">Noticias</h3>
+          <button type="button" id="btnRefreshNews" data-action="refresh-news" class="btn btn-outline-primary">
+            Actualizar
+          </button>
+        </div>
+
+        <div class="news-list d-grid gap-3" id="newsList">
+          <article class="news-item card">
+            <img src="assets/img/placeholders/news-placeholder.jpg" class="card-img-top" alt="Imagen de noticia" />
+            <div class="card-body news-content">
+              <h4 class="h6">Título de noticia</h4>
+              <p class="card-text">Descripción breve de la noticia.</p>
+              <p class="mb-2"><small>Hora: --</small></p>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">Ver noticia completa</a>
+            </div>
+          </article>
+
+          <article class="news-item card">
+            <img src="assets/img/placeholders/news-placeholder.jpg" class="card-img-top" alt="Imagen de noticia" />
+            <div class="card-body news-content">
+              <h4 class="h6">Título de noticia</h4>
+              <p class="card-text">Descripción breve de la noticia.</p>
+              <p class="mb-2"><small>Hora: --</small></p>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">Ver noticia completa</a>
+            </div>
+          </article>
+
+          <article class="news-item card">
+            <img src="assets/img/placeholders/news-placeholder.jpg" class="card-img-top" alt="Imagen de noticia" />
+            <div class="card-body news-content">
+              <h4 class="h6">Título de noticia</h4>
+              <p class="card-text">Descripción breve de la noticia.</p>
+              <p class="mb-2"><small>Hora: --</small></p>
+              <a href="#" target="_blank" rel="noopener noreferrer" class="btn btn-sm btn-outline-primary">Ver noticia completa</a>
+            </div>
+          </article>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <!-- MODAL: CONFIGURACIÓN / NUEVA CIUDAD -->
+  <div class="modal fade" id="citySetupModal" tabindex="-1" aria-labelledby="citySetupModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <form id="citySetupForm">
+          <div class="modal-header">
+            <h2 class="modal-title h4" id="citySetupModalLabel">Crear nueva ciudad</h2>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+          </div>
+
+          <div class="modal-body">
+            <fieldset class="mb-3">
+              <legend>Datos generales</legend>
+
+              <label for="cityNameInput" class="form-label">Nombre de la ciudad</label>
+              <input type="text" id="cityNameInput" name="cityName" maxlength="50" required class="form-control" />
+
+              <label for="mayorNameInput" class="form-label">Nombre del alcalde/jugador</label>
+              <input type="text" id="mayorNameInput" name="mayorName" maxlength="50" required class="form-control" />
+
+              <label for="regionSelect" class="form-label">Región geográfica</label>
+              <select id="regionSelect" name="region" required class="form-select">
+                <option value="">Seleccione una ciudad de Colombia</option>
+              </select>
+
+              <label for="latitudeInput" class="form-label">Latitud</label>
+              <input type="number" id="latitudeInput" name="latitude" step="0.000001" class="form-control" />
+
+              <label for="longitudeInput" class="form-label">Longitud</label>
+              <input type="number" id="longitudeInput" name="longitude" step="0.000001" class="form-control" />
+
+              <label for="mapSizeSelect" class="form-label">Tamaño del mapa</label>
+              <select id="mapSizeSelect" name="mapSize" required class="form-select">
+                <option value="15">15 x 15</option>
+                <option value="16">16 x 16</option>
+                <option value="17">17 x 17</option>
+                <option value="18">18 x 18</option>
+                <option value="19">19 x 19</option>
+                <option value="20" selected>20 x 20</option>
+                <option value="21">21 x 21</option>
+                <option value="22">22 x 22</option>
+                <option value="23">23 x 23</option>
+                <option value="24">24 x 24</option>
+                <option value="25">25 x 25</option>
+                <option value="26">26 x 26</option>
+                <option value="27">27 x 27</option>
+                <option value="28">28 x 28</option>
+                <option value="29">29 x 29</option>
+                <option value="30">30 x 30</option>
+              </select>
+            </fieldset>
+
+            <fieldset class="mb-3">
+              <legend>Parámetros configurables</legend>
+
+              <label for="initialMoneyInput" class="form-label">Dinero inicial</label>
+              <input type="number" id="initialMoneyInput" name="initialMoney" value="50000" min="0" class="form-control" />
+
+              <label for="initialElectricityInput" class="form-label">Electricidad inicial</label>
+              <input type="number" id="initialElectricityInput" name="initialElectricity" value="0" class="form-control" />
+
+              <label for="initialWaterInput" class="form-label">Agua inicial</label>
+              <input type="number" id="initialWaterInput" name="initialWater" value="0" class="form-control" />
+
+              <label for="initialFoodInput" class="form-label">Alimentos iniciales</label>
+              <input type="number" id="initialFoodInput" name="initialFood" value="0" class="form-control" />
+
+              <label for="turnDurationInput" class="form-label">Duración del turno en segundos</label>
+              <input type="number" id="turnDurationInput" name="turnDuration" value="10" min="1" class="form-control" />
+
+              <label for="citizenGrowthMinInput" class="form-label">Crecimiento mínimo de ciudadanos por turno</label>
+              <input type="number" id="citizenGrowthMinInput" name="citizenGrowthMin" value="1" min="0" class="form-control" />
+
+              <label for="citizenGrowthMaxInput" class="form-label">Crecimiento máximo de ciudadanos por turno</label>
+              <input type="number" id="citizenGrowthMaxInput" name="citizenGrowthMax" value="3" min="0" class="form-control" />
+            </fieldset>
+
+            <fieldset>
+              <legend>Cargar mapa desde archivo</legend>
+
+              <label for="mapFileInput" class="form-label">Archivo .txt del mapa</label>
+              <input type="file" id="mapFileInput" name="mapFile" accept=".txt" class="form-control" />
+              <p id="mapLoadStatus" class="mt-2 mb-0">Sin archivo seleccionado.</p>
+            </fieldset>
+          </div>
+
+          <div class="modal-footer">
+            <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancelar</button>
+            <button type="submit" id="btnCreateCityConfirm" class="btn btn-primary">Crear ciudad</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: CONTINUAR PARTIDA -->
+  <div class="modal fade" id="continueGameModal" tabindex="-1" aria-labelledby="continueGameModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h4" id="continueGameModalLabel">Partida guardada detectada</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>¿Deseas continuar tu partida anterior?</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btnStartNewInstead" class="btn btn-outline-secondary">Nueva ciudad</button>
+          <button type="button" id="btnLoadSavedGame" class="btn btn-primary">Continuar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: INFORMACIÓN DE EDIFICIO -->
+  <div class="modal fade" id="buildingInfoModal" tabindex="-1" aria-labelledby="buildingInfoModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h4" id="buildingInfoModalLabel">Información del edificio</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p>Tipo: <strong id="buildingInfoType">---</strong></p>
+          <p>Nombre: <strong id="buildingInfoName">---</strong></p>
+          <p>Costo de construcción: <strong id="buildingInfoCost">---</strong></p>
+          <p>Mantenimiento por turno: <strong id="buildingInfoMaintenance">---</strong></p>
+          <p>Recursos que consume: <strong id="buildingInfoConsumption">---</strong></p>
+          <p>Recursos que produce: <strong id="buildingInfoProduction">---</strong></p>
+          <p>Capacidad: <strong id="buildingInfoCapacity">---</strong></p>
+          <p>Ocupación actual: <strong id="buildingInfoOccupancy">---</strong></p>
+          <p>Ciudadanos viviendo: <strong id="buildingInfoResidents">---</strong></p>
+          <p>Empleados actuales: <strong id="buildingInfoEmployees">---</strong></p>
+          <p>Felicidad promedio: <strong id="buildingInfoAverageHappiness">---</strong></p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btnDemolishFromInfo" data-action="demolish-from-info" class="btn btn-danger">
+            Demoler
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: DESGLOSE DE PUNTUACIÓN -->
+  <div class="modal fade" id="scoreBreakdownModal" tabindex="-1" aria-labelledby="scoreBreakdownModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h4" id="scoreBreakdownModalLabel">Desglose de puntuación</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <ul class="list-group">
+            <li class="list-group-item">Puntos por población: <strong id="scorePopulationPoints">0</strong></li>
+            <li class="list-group-item">Puntos por felicidad: <strong id="scoreHappinessPoints">0</strong></li>
+            <li class="list-group-item">Puntos por dinero: <strong id="scoreMoneyPoints">0</strong></li>
+            <li class="list-group-item">Puntos por edificios: <strong id="scoreBuildingsPoints">0</strong></li>
+            <li class="list-group-item">Puntos por electricidad: <strong id="scoreElectricityPoints">0</strong></li>
+            <li class="list-group-item">Puntos por agua: <strong id="scoreWaterPoints">0</strong></li>
+            <li class="list-group-item">Bonificaciones: <strong id="scoreBonusPoints">0</strong></li>
+            <li class="list-group-item">Penalizaciones: <strong id="scorePenaltyPoints">0</strong></li>
+            <li class="list-group-item">Total: <strong id="scoreTotalPoints">0</strong></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: RANKING -->
+  <div class="modal fade" id="rankingModal" tabindex="-1" aria-labelledby="rankingModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h4" id="rankingModalLabel">Ranking local</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive mb-3">
+            <table id="rankingTable" class="table table-striped table-bordered align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>Posición</th>
+                  <th>Ciudad</th>
+                  <th>Alcalde</th>
+                  <th>Puntuación</th>
+                  <th>Población</th>
+                  <th>Felicidad</th>
+                  <th>Turnos</th>
+                  <th>Fecha</th>
+                </tr>
+              </thead>
+              <tbody id="rankingTableBody">
+                <tr>
+                  <td>1</td>
+                  <td>---</td>
+                  <td>---</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>0</td>
+                  <td>---</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <p id="currentCityRankingText" class="mb-0">Tu ciudad: #--</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" id="btnResetRanking" class="btn btn-danger">Reiniciar ranking</button>
+          <button type="button" id="btnExportRanking" class="btn btn-warning">Exportar ranking a JSON</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: LISTA DE CIUDADANOS -->
+  <div class="modal fade" id="citizensModal" tabindex="-1" aria-labelledby="citizensModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg modal-dialog-scrollable">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h4" id="citizensModalLabel">Listado de ciudadanos</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <div class="table-responsive">
+            <table id="citizensTable" class="table table-hover table-bordered align-middle">
+              <thead class="table-light">
+                <tr>
+                  <th>ID</th>
+                  <th>Vivienda</th>
+                  <th>Empleo</th>
+                  <th>Felicidad</th>
+                </tr>
+              </thead>
+              <tbody id="citizensTableBody">
+                <tr>
+                  <td>---</td>
+                  <td>---</td>
+                  <td>---</td>
+                  <td>---</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: ALERTAS -->
+  <div class="modal fade" id="alertModal" tabindex="-1" aria-labelledby="alertModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h2 class="modal-title h4" id="alertModalLabel">Alerta del sistema</h2>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+        <div class="modal-body">
+          <p id="alertDialogMessage">Mensaje del sistema</p>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TEMPLATES -->
+  <template id="notificationTemplate">
+    <article class="notification-item alert alert-primary mb-2">
+      <h3 class="notification-title h6"></h3>
+      <p class="notification-message mb-1"></p>
+      <time class="notification-time"></time>
+    </article>
+  </template>
+
+  <template id="newsItemTemplate">
+    <article class="news-item card">
+      <img class="news-image card-img-top" src="assets/img/placeholders/news-placeholder.jpg" alt="Imagen de noticia" />
+      <div class="card-body news-content">
+        <h4 class="news-title h6"></h4>
+        <p class="news-description card-text"></p>
+        <p class="mb-2"><small class="news-timestamp"></small></p>
+        <a class="news-link btn btn-sm btn-outline-primary" href="#" target="_blank" rel="noopener noreferrer">
+          Ver noticia completa
+        </a>
+      </div>
+    </article>
+  </template>
+
+  <template id="rankingRowTemplate">
+    <tr>
+      <td class="ranking-position"></td>
+      <td class="ranking-city"></td>
+      <td class="ranking-mayor"></td>
+      <td class="ranking-score"></td>
+      <td class="ranking-population"></td>
+      <td class="ranking-happiness"></td>
+      <td class="ranking-turns"></td>
+      <td class="ranking-date"></td>
+    </tr>
+  </template>
+
+  <template id="citizenRowTemplate">
+    <tr>
+      <td class="citizen-id"></td>
+      <td class="citizen-home"></td>
+      <td class="citizen-job"></td>
+      <td class="citizen-happiness"></td>
+    </tr>
+  </template>
+
+  <template id="gridCellTemplate">
+    <button
+      type="button"
+      class="grid-cell"
+      role="gridcell"
+      data-x=""
+      data-y=""
+      data-cell-type="grass"
+      aria-label="Celda vacía"
+    ></button>
+  </template>
+
+  <!-- Bootstrap JS Bundle -->
+  <script
+    src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"
+    integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz"
+    crossorigin="anonymous"
+  ></script>
+
+  <!-- JS propio -->
+  <script src="assets/js/config.js" defer></script>
+  <script src="assets/js/data/cities.js" defer></script>
+  <script src="assets/js/models/city.js" defer></script>
+  <script src="assets/js/models/grid.js" defer></script>
+  <script src="assets/js/models/building.js" defer></script>
+  <script src="assets/js/models/citizen.js" defer></script>
+  <script src="assets/js/models/resources.js" defer></script>
+  <script src="assets/js/services/storage-service.js" defer></script>
+  <script src="assets/js/services/weather-service.js" defer></script>
+  <script src="assets/js/services/news-service.js" defer></script>
+  <script src="assets/js/services/routing-service.js" defer></script>
+  <script src="assets/js/services/ranking-service.js" defer></script>
+  <script src="assets/js/services/map-import-service.js" defer></script>
+  <script src="assets/js/controllers/game-controller.js" defer></script>
+  <script src="assets/js/controllers/ui-controller.js" defer></script>
+  <script src="assets/js/controllers/build-controller.js" defer></script>
+  <script src="assets/js/controllers/turn-controller.js" defer></script>
+  <script src="assets/js/controllers/citizen-controller.js" defer></script>
+  <script src="assets/js/controllers/score-controller.js" defer></script>
+  <script src="assets/js/controllers/route-controller.js" defer></script>
+  <script src="assets/js/main.js" defer></script>
+</body>
+</html>

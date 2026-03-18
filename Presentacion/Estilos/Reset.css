@@ -1,0 +1,63 @@
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+html {
+  font-size: 16px;
+  scroll-behavior: smooth;
+}
+
+body,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+p,
+figure,
+blockquote,
+dl,
+dd {
+  margin: 0;
+}
+
+button,
+input,
+select,
+textarea {
+  font: inherit;
+}
+
+img {
+  max-width: 100%;
+  display: block;
+}
+
+dialog {
+  border: none;
+  padding: 0;
+}
+
+:root {
+  --app-bg: #edf2f7;
+  --panel-bg: #ffffff;
+  --panel-border: #d7dee7;
+  --primary: #0d6efd;
+  --primary-dark: #0a58ca;
+  --success: #198754;
+  --warning: #ffc107;
+  --danger: #dc3545;
+  --secondary-text: #5c6670;
+  --main-text: #1f2933;
+  --shadow-sm: 0 4px 10px rgba(0, 0, 0, 0.06);
+  --shadow-md: 0 10px 24px rgba(0, 0, 0, 0.08);
+  --radius-md: 14px;
+  --radius-lg: 18px;
+  --gap-lg: 1rem;
+  --gap-md: 0.75rem;
+  --gap-sm: 0.5rem;
+  --grid-cell-size: 42px;
+}
