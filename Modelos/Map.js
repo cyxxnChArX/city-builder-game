@@ -82,3 +82,5 @@ class Map {
         return false;
     }
 }
+
+export default Map;

@@ -38,3 +38,5 @@ class EmploymentBuilding extends Building {
     }
 
 }
+
+export default EmploymentBuilding;

@@ -33,3 +33,5 @@ class UtilityPlant extends Building {
     }
 
 }
+
+export default UtilityPlant;

@@ -5,3 +5,5 @@ class Road extends Building {
         super(id, costo, x, y);
     }
 }
+
+export default Road;

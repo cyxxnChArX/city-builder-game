@@ -38,3 +38,5 @@ class CommercialBuilding extends EmploymentBuilding {
     }
 
 }
+
+export default CommercialBuilding;

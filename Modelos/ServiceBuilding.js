@@ -40,3 +40,5 @@ class ServiceBuilding extends Building {
     }
 
 }
+
+export default ServiceBuilding;

@@ -41,3 +41,5 @@ class IndustrialBuilding extends EmploymentBuilding {
     }
 
 }
+
+export default IndustrialBuilding;

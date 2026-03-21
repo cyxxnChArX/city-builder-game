@@ -76,3 +76,5 @@ class ResidentialBuilding extends Building {
     }
 
 }
+
+export default ResidentialBuilding;

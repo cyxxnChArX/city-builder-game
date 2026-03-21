@@ -10,3 +10,5 @@ class Park extends Building {
     }
 
 }
+
+export default Park;

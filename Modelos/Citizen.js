@@ -50,3 +50,5 @@ class Citizen {
     }
 
 }
+
+export default Citizen;
