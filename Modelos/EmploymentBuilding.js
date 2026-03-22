@@ -1,3 +1,5 @@
+import Building from "./Building.js";
+
 class EmploymentBuilding extends Building {
 
     constructor(id, costo, x, y, tipo, capacidadEmpleo) {

@@ -1,3 +1,5 @@
+import EmploymentBuilding from "./EmploymentBuilding.js";
+
 class CommercialBuilding extends EmploymentBuilding {
 
     static TIPOS = {

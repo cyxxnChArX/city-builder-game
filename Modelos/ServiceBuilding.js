@@ -1,3 +1,5 @@
+import Building from "./Building.js";
+
 class ServiceBuilding extends Building {
 
     static TIPOS = {

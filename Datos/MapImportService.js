@@ -1,16 +1,14 @@
-import City from "./City.js";
-import Map from "./Map.js";
-import Resources from "./Resources.js";
+import City from "../Modelos/City.js";
+import Map from "../Modelos/Map.js";
+import Resources from "../Modelos/Resources.js";
 
-import Road from "./Road.js";
-import Park from "./Park.js";
-import ResidentialBuilding from "./ResidentialBuilding.js";
-import CommercialBuilding from "./CommercialBuilding.js";
-import IndustrialBuilding from "./IndustrialBuilding.js";
-import ServiceBuilding from "./ServiceBuilding.js";
-import UtilityPlant from "./UtilityPlant.js";
-import Building from "../Modelos/Building.js";
-import EmploymentBuilding from "../Modelos/EmploymentBuilding.js";
+import Road from "../Modelos/Road.js";
+import Park from "../Modelos/Park.js";
+import ResidentialBuilding from "../Modelos/ResidentialBuilding.js";
+import CommercialBuilding from "../Modelos/CommercialBuilding.js";
+import IndustrialBuilding from "../Modelos/IndustrialBuilding.js";
+import ServiceBuilding from "../Modelos/ServiceBuilding.js";
+import UtilityPlant from "../Modelos/UtilityPlant.js";
 
 class MapImportService {
     static VALID_MIN_SIZE = 15;
@@ -36,7 +34,7 @@ class MapImportService {
         U1: { className: "UtilityPlant", tipo: UtilityPlant.TIPOS.PLANTA_ELECTRICA },
         U2: { className: "UtilityPlant", tipo: UtilityPlant.TIPOS.PLANTA_AGUA },
 
-        P1: { className: "Park", tipo: Park.TIPOS.PARQUE }
+        P1: { className: "Park" }
     };
 
     // =========================================
@@ -282,16 +280,16 @@ class MapImportService {
             }
 
             // PRODUCCIÓN
-            if (b.tipo === "Planta Eléctrica") {
+            if (b.tipo === UtilityPlant.TIPOS.PLANTA_ELECTRICA) {
                 electricity += 200;
             }
 
-            if (b.tipo === "Planta de Agua") {
+            if (b.tipo === UtilityPlant.TIPOS.PLANTA_AGUA) {
                 water += 150;
                 electricity -= 20;
             }
 
-            if (b.tipo === "Granja") {
+            if (b.tipo === UtilityPlant.TIPOS.GRANJA) {
                 food += 50;
             }
 
@@ -304,10 +302,6 @@ class MapImportService {
                 water -= b.consumoAgua;
             }
         });
-
-        // vías también cuestan
-        const roadCount = city.map.countRoads?.() || 0;
-        money -= roadCount * 100;
 
         city.resources.dinero = money;
         city.resources.electricidad = electricity;

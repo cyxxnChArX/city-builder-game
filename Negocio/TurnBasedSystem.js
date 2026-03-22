@@ -105,7 +105,10 @@ class TurnBasedSystem {
                         } 
                         // si alguno es 0 sea cual sea no produce nada
                     }
+                }
 
+                if (this.city.resources.agua > 0){
+                    
                     if (building.tipo === IndustrialBuilding.TIPOS.GRANJA) {
 
                         const agua = this.city.resources.agua;

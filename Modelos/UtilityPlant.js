@@ -1,3 +1,5 @@
+import Building from "./Building.js";
+
 class UtilityPlant extends Building {
 
     static TIPOS = {

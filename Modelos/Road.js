@@ -1,3 +1,5 @@
+import Building from "./Building.js";
+
 class Road extends Building {
 
     constructor(id, x, y) {

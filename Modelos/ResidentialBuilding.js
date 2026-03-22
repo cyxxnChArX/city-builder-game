@@ -1,3 +1,5 @@
+import Building from "./Building.js";
+
 class ResidentialBuilding extends Building {
 
     static TIPOS = {
