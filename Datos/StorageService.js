@@ -10,8 +10,8 @@ import CommercialBuilding from "../Modelos/CommercialBuilding.js";
 import IndustrialBuilding from "../Modelos/IndustrialBuilding.js";
 import ServiceBuilding from "../Modelos/ServiceBuilding.js";
 import UtilityPlant from "../Modelos/UtilityPlant.js";
-import Building from "../Modelos/Building";
-import EmploymentBuilding from "../Modelos/EmploymentBuilding";
+import Building from "../Modelos/Building.js";
+import EmploymentBuilding from "../Modelos/EmploymentBuilding.js";
 
 class StorageService {
     static SAVES_KEY = "cityGame_saves";

@@ -1,7 +1,7 @@
 import Road from "../Modelos/Road.js";
 import ResidentialBuilding from "../Modelos/ResidentialBuilding.js";
 import EmploymentBuilding from "../Modelos/EmploymentBuilding.js";
-import Building from "../Modelos/Building";
+import Building from "../Modelos/Building.js";
 
 class BuildingManager {
 

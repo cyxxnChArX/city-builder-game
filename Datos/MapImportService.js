@@ -9,8 +9,8 @@ import CommercialBuilding from "./CommercialBuilding.js";
 import IndustrialBuilding from "./IndustrialBuilding.js";
 import ServiceBuilding from "./ServiceBuilding.js";
 import UtilityPlant from "./UtilityPlant.js";
-import Building from "../Modelos/Building";
-import EmploymentBuilding from "../Modelos/EmploymentBuilding";
+import Building from "../Modelos/Building.js";
+import EmploymentBuilding from "../Modelos/EmploymentBuilding.js";
 
 class MapImportService {
     static VALID_MIN_SIZE = 15;

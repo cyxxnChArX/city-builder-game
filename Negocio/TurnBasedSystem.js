@@ -5,8 +5,8 @@ import StorageService from "../Datos/StorageService.js";
 import CommercialBuilding from "../Modelos/CommercialBuilding.js";
 import IndustrialBuilding from "../Modelos/IndustrialBuilding.js";
 import UtilityPlant from "../Modelos/UtilityPlant.js";
-import Building from "../Modelos/Building";
-import EmploymentBuilding from "../Modelos/EmploymentBuilding";
+import Building from "../Modelos/Building.js";
+import EmploymentBuilding from "../Modelos/EmploymentBuilding.js";
 
 class TurnBasedSystem {
 
@@ -26,6 +26,8 @@ class TurnBasedSystem {
     //==============================
 
     start() {
+
+        if (this.turnInterval || this.autoSaveInterval) return;
 
         this.turnInterval = setInterval(() => {
             this.executeTurn();
@@ -63,8 +65,6 @@ class TurnBasedSystem {
         ScoringSystem.updateCityScore(this.city);
 
         this.checkGameOver();
-
-        this.saveGame();
     }
 
     //==============================

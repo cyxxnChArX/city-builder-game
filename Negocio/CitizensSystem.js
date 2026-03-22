@@ -3,7 +3,7 @@ import ResidentialBuilding from "../Modelos/ResidentialBuilding.js";
 import EmploymentBuilding from "../Modelos/EmploymentBuilding.js";
 import ServiceBuilding from "../Modelos/ServiceBuilding.js";
 import Park from "../Modelos/Park.js";
-import Building from "../Modelos/Building";
+import Building from "../Modelos/Building.js";
 
 class CitizensSystem {
 
@@ -73,7 +73,7 @@ class CitizensSystem {
         //entonces sera igual al tamaño de la lista +1 ya que eliminar ciudadanos no es una funcion 
 
         for (let i = 0; i < cantidadCrear; i++) {
-            const id = city.citizens.length + 1;
+            const id = `cit_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
             const ciudadano = new Citizen(id);
 
             this.asignarVivienda(ciudadano, city);
