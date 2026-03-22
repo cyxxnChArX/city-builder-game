@@ -1,3 +1,5 @@
+import Road from "./Road.js";
+
 class Map {
 
     constructor(ancho, alto) {

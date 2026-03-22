@@ -1,9 +1,12 @@
 import CitizensSystem from "./CitizensSystem.js";
-import ScoringSystem from "./ScoreManager.js";
+import ScoringSystem from "./ScoringSystem.js";
+import StorageService from "../Datos/StorageService.js";
 
 import CommercialBuilding from "../Modelos/CommercialBuilding.js";
 import IndustrialBuilding from "../Modelos/IndustrialBuilding.js";
 import UtilityPlant from "../Modelos/UtilityPlant.js";
+import Building from "../Modelos/Building";
+import EmploymentBuilding from "../Modelos/EmploymentBuilding";
 
 class TurnBasedSystem {
 
@@ -14,7 +17,8 @@ class TurnBasedSystem {
 
         this.citizenSystem = new CitizensSystem();
 
-        this.interval = null;
+        this.turnInterval = null;
+        this.autoSaveInterval = null;
     }
 
     //==============================
@@ -23,14 +27,21 @@ class TurnBasedSystem {
 
     start() {
 
-        this.interval = setInterval(() => {
+        this.turnInterval = setInterval(() => {
             this.executeTurn();
         }, this.turnDuration);
 
+        this.autoSaveInterval = setInterval(() => {
+            this.saveGame();
+        }, 30000);
     }
 
     stop() {
-        clearInterval(this.interval);
+        clearInterval(this.turnInterval);
+        clearInterval(this.autoSaveInterval);
+
+        this.turnInterval = null;
+        this.autoSaveInterval = null;
     }
 
     //==============================
@@ -52,8 +63,6 @@ class TurnBasedSystem {
         ScoringSystem.updateCityScore(this.city);
 
         this.checkGameOver();
-
-        this.saveGame();
     }
 
     //==============================
@@ -95,13 +104,24 @@ class TurnBasedSystem {
                         // si alguno es 0 sea cual sea no produce nada
                     }
 
+                    if (building.tipo === IndustrialBuilding.TIPOS.GRANJA) {
+
+                        const agua = this.city.resources.agua;
+
+                        if (agua >= building.consumoAgua) {
+
+                            // producción completa osea del 100% 
+                            this.city.resources.alimentos += building.produccionPorTurno;
+
+                        } else if (agua > 0) {
+
+                            // producción reducida al 50% si no cumple con que agua sea mayor a lo que consume
+                            this.city.resources.alimentos += building.produccionPorTurno * 0.5;
+                        }
+                    }
                 }
 
-                if (building.tipo === IndustrialBuilding.TIPOS.GRANJA) {
-                    if (this.city.resources.agua > 0) {
-                        this.city.resources.alimentos += building.produccionPorTurno;
-                    }                    
-                }
+                
 
             }
 
@@ -183,11 +203,7 @@ class TurnBasedSystem {
     //==============================
 
     saveGame() {
-
-        const data = JSON.stringify(this.city);
-
-        localStorage.setItem("cityGame", data);
-
+        StorageService.saveGame(this.city);
     }
 
 }

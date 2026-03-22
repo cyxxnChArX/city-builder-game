@@ -1,15 +1,17 @@
-import City from "..Modelos/City.js";
-import Map from "..Modelos/Map.js";
-import Resources from "..Modelos/Resources.js";
-import Citizen from "..Modelos/Citizen.js";
+import City from "../Modelos/City.js";
+import Map from "../Modelos/Map.js";
+import Resources from "../Modelos/Resources.js";
+import Citizen from "../Modelos/Citizen.js";
 
-import Road from "..Modelos/Road.js";
-import Park from "..Modelos/Park.js";
-import ResidentialBuilding from "..Modelos/ResidentialBuilding.js";
-import CommercialBuilding from "..Modelos/CommercialBuilding.js";
-import IndustrialBuilding from "..Modelos/IndustrialBuilding.js";
-import ServiceBuilding from "..Modelos/ServiceBuilding.js";
-import UtilityPlant from "..Modelos/UtilityPlant.js";
+import Road from "../Modelos/Road.js";
+import Park from "../Modelos/Park.js";
+import ResidentialBuilding from "../Modelos/ResidentialBuilding.js";
+import CommercialBuilding from "../Modelos/CommercialBuilding.js";
+import IndustrialBuilding from "../Modelos/IndustrialBuilding.js";
+import ServiceBuilding from "../Modelos/ServiceBuilding.js";
+import UtilityPlant from "../Modelos/UtilityPlant.js";
+import Building from "../Modelos/Building";
+import EmploymentBuilding from "../Modelos/EmploymentBuilding";
 
 class StorageService {
     static SAVES_KEY = "cityGame_saves";

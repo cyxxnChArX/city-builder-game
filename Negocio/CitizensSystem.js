@@ -3,6 +3,7 @@ import ResidentialBuilding from "../Modelos/ResidentialBuilding.js";
 import EmploymentBuilding from "../Modelos/EmploymentBuilding.js";
 import ServiceBuilding from "../Modelos/ServiceBuilding.js";
 import Park from "../Modelos/Park.js";
+import Building from "../Modelos/Building";
 
 class CitizensSystem {
 
