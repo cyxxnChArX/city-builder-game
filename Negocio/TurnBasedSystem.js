@@ -63,6 +63,8 @@ class TurnBasedSystem {
         ScoringSystem.updateCityScore(this.city);
 
         this.checkGameOver();
+
+        this.saveGame();
     }
 
     //==============================
