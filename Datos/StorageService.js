@@ -24,6 +24,10 @@ class StorageService {
             throw new Error("No se puede guardar una ciudad nula o indefinida.");
         }
 
+        if (!this.isMayorNameUnique(city.alcalde, city.id)) {
+            throw new Error("El nombre del alcalde ya está en uso en otra ciudad.");
+        }
+
         if (!city.id) {
             city.id = this.generateCityId();
         }
@@ -192,6 +196,18 @@ class StorageService {
         return `city_${Date.now()}_${randomPart}`;
     }
 
+    static isMayorNameUnique(alcalde, currentCityId = null) {
+        if (!alcalde) return true;
+
+        const saves = this.getAllRawSaves();
+
+        return !saves.some(save =>
+            save.alcalde &&
+            save.alcalde.toLowerCase().trim() === alcalde.toLowerCase().trim() &&
+            save.id !== currentCityId
+        );
+    }
+
     // =========================================
     // SERIALIZACIÓN
     // =========================================
@@ -233,7 +249,9 @@ class StorageService {
                 jobId: citizen.job ? citizen.job.id : null
             })),
 
-            buildings: city.buildings.map(building => this.serializeBuilding(building))
+            buildings: city.buildings.map(building => this.serializeBuilding(building)),
+
+            alcalde: city.alcalde
         };
     }
 
@@ -356,9 +374,11 @@ class StorageService {
             data.id,
             data.nombre,
             mapInstance,
-            resourcesInstance
+            resourcesInstance,
+            data.alcalde
         );
 
+        cityInstance.alcalde = data.alcalde || "";
         cityInstance.region = data.region || "";
         cityInstance.turno = data.turno ?? 1;
         cityInstance.puntaje = data.puntaje ?? 0;

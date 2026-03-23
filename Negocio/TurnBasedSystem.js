@@ -5,8 +5,8 @@ import StorageService from "../Datos/StorageService.js";
 import CommercialBuilding from "../Modelos/CommercialBuilding.js";
 import IndustrialBuilding from "../Modelos/IndustrialBuilding.js";
 import UtilityPlant from "../Modelos/UtilityPlant.js";
-import Building from "../Modelos/Building.js";
-import EmploymentBuilding from "../Modelos/EmploymentBuilding.js";
+
+import RankingService from "./RankingService.js";
 
 class TurnBasedSystem {
 
@@ -64,6 +64,8 @@ class TurnBasedSystem {
 
         ScoringSystem.updateCityScore(this.city);
 
+        RankingService.updateCityRanking(this.city);
+
         this.checkGameOver();
     }
 
@@ -108,7 +110,7 @@ class TurnBasedSystem {
                 }
 
                 if (this.city.resources.agua > 0){
-                    
+
                     if (building.tipo === IndustrialBuilding.TIPOS.GRANJA) {
 
                         const agua = this.city.resources.agua;

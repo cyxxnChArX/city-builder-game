@@ -289,7 +289,7 @@ class MapImportService {
                 electricity -= 20;
             }
 
-            if (b.tipo === UtilityPlant.TIPOS.GRANJA) {
+            if (b.tipo === IndustrialBuilding.TIPOS.GRANJA) {
                 food += 50;
             }
 

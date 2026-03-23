@@ -1,6 +1,6 @@
 class City {
 
-    constructor(id, nombre, map, resources) {
+    constructor(id, nombre, map, resources, alcalde = "") {
         this.id = id;
         this.nombre = nombre;
         this.region = ""; 
@@ -11,7 +11,7 @@ class City {
         this.resources = resources;
         this.citizens = [];
         this.buildings = [];
-
+        this.alcalde = alcalde;
     }
 
     // Metodos de ciudadanos
