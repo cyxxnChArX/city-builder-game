@@ -118,6 +118,13 @@
   background: linear-gradient(180deg, #7bc96f 0%, #5fa553 100%);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
+.grid-cell.road {
+  background: #6c757d;
+}
+
+.grid-cell.residential {
+  background: #4da6ff;
+}
 
 .grid-cell:hover {
   transform: scale(1.03);
@@ -203,7 +210,7 @@
   text-decoration: underline;
 }
 
-form {
+.panel form {
   padding: 1.25rem;
 }
 
@@ -262,3 +269,18 @@ kbd {
 .btn:active {
   transform: scale(0.98);
 }
+
+.modal-body {
+  max-height: 70vh;
+  overflow-y: auto;
+}
+
+.modal form {
+  padding: 0; /* importante */
+}
+/*Bootstrap espera que el scroll esté en .modal-body
+
+pero el form está “creciendo” más que el modal
+entonces el scroll nunca se activa al quitar ese padding dentro del modal:
+el contenido se ajusta- aparece el scroll y se puedes bajar
+

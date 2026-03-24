@@ -7,9 +7,9 @@ import Park from "../Modelos/Park.js";
 class CitizensSystem {
 
     //valores que se podrian cambiar si es necesario pero por defecto son 1 y 3 se usaron para crear esa cantidad de ciudadanos
-    constructor() {
-        this.tasaMinima = 1;
-        this.tasaMaxima = 3;
+    constructor(min = 1, max = 3) {
+        this.tasaMinima = min;
+        this.tasaMaxima = max;
     }
 
     //metodo que hace el orden correcto de la simulacion de ciudadanoss
