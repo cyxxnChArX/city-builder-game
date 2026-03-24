@@ -115,15 +115,93 @@
   height: var(--grid-cell-size);
   border: 1px solid rgba(0, 0, 0, 0.08);
   border-radius: 8px;
-  background: linear-gradient(180deg, #7bc96f 0%, #5fa553 100%);
+  background: linear-gradient(180deg, #9c9c9c 0%, #e9e9e9 100%);
   transition: transform 0.15s ease, box-shadow 0.15s ease;
 }
-.grid-cell.road {
-  background: #6c757d;
+/* =========================
+   BASE
+========================= */
+.grid-cell {
+  border: 1px solid #ccc;
 }
 
-.grid-cell.residential {
-  background: #4da6ff;
+/* =========================
+   VÍAS
+========================= */
+.grid-cell.via {
+  background: #6c757d; /* gris */
+}
+
+/* =========================
+   RESIDENCIAL
+========================= */
+.grid-cell.casa {
+  background: #4da6ff; /* azul claro */
+}
+
+.grid-cell.apartamento {
+  background: #0056b3; /* azul oscuro */
+}
+
+/* =========================
+   COMERCIAL
+========================= */
+.grid-cell.tienda {
+  background: #9d00ff; /* verde claro */
+}
+
+.grid-cell.centro_comercial {
+  background: #5d00ff; /* verde oscuro */
+}
+
+/* =========================
+   INDUSTRIAL
+========================= */
+.grid-cell.fabrica {
+  background: #ffcd44; /* naranja claro */
+}
+
+.grid-cell.granja {
+  background: #ff6600; /* naranja oscuro */
+}
+
+/* =========================
+   SERVICIOS
+========================= */
+.grid-cell.estacion_policia {
+  background: #f702b2; /* rojo claro */
+}
+
+.grid-cell.estacion_bomberos {
+  background: #62094e; /* rojo fuerte */
+}
+
+.grid-cell.hospital {
+  background: #4c1439; /* rojo suave */
+}
+
+/* =========================
+   UTILIDADES
+========================= */
+.grid-cell.planta_electrica {
+  background: #00ff40; /* amarillo fuerte */
+}
+
+.grid-cell.planta_agua {
+  background: #219648; /* amarillo claro */
+}
+
+/* =========================
+   PARQUE
+========================= */
+.grid-cell.parque {
+  background: #2f8857be; /* verde natural */
+}
+
+.grid-cell:hover {
+  outline: 2px solid black;
+  transform: scale(1.05);
+  transition: 0.1s;
 }
 
 .grid-cell:hover {

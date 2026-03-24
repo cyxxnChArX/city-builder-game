@@ -8,14 +8,18 @@ import UtilityPlant from "../Modelos/UtilityPlant.js";
 
 import RankingService from "./RankingService.js";
 
+import UIController from "./UIController.js";
+
 class TurnBasedSystem {
 
-    constructor(city, turnDuration = 10000) {
+    constructor(city, turnDuration = 10000, min = 1, max = 3) {
 
         this.city = city;
         this.turnDuration = turnDuration;
 
-        this.citizenSystem = new CitizensSystem();
+        //hago esto para que cuando se pongan los datos del usuario de la tasa de crecimiento
+        //  se creen desde aca y sirva de algo ingresar esos valores min y max
+        this.citizenSystem = new CitizensSystem(min, max);
 
         this.turnInterval = null;
         this.autoSaveInterval = null;
@@ -67,6 +71,10 @@ class TurnBasedSystem {
         RankingService.updateCityRanking(this.city);
 
         this.checkGameOver();
+
+        // ESTO VA AQUI para que en cada turno se actualice lo que se ve en la parte de arriba
+        //los recursos que son
+        UIController.update(this.city);
     }
 
     //==============================
@@ -194,12 +202,14 @@ class TurnBasedSystem {
         if (this.city.resources.electricidad < 0) {
 
             alert("Game Over: electricidad negativa");
+            this.city.gameOver = true;
             this.stop();
         }
 
         if (this.city.resources.agua < 0) {
 
             alert("Game Over: agua negativa");
+            this.city.gameOver = true;
             this.stop();
         }
 
