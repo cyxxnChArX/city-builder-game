@@ -29,9 +29,9 @@ class UIController {
         if (water) water.textContent = city.resources.agua;
         if (food) food.textContent = city.resources.alimentos;
 
-        if (population) population.textContent = city.poblacion || 0;
+        if (population) population.textContent = city.citizens.length;
         if (happiness) happiness.textContent = city.felicidadPromedio || 0;
-        if (score) score.textContent = city.puntuacion || 0;
+        if (score) score.textContent = city.puntaje || 0;
     }
 
 }

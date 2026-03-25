@@ -251,7 +251,8 @@ class StorageService {
 
             buildings: city.buildings.map(building => this.serializeBuilding(building)),
 
-            alcalde: city.alcalde
+            alcalde: city.alcalde,
+            config: city.config || null
         };
     }
 
@@ -378,6 +379,7 @@ class StorageService {
             data.alcalde
         );
 
+        cityInstance.config = data.config || null;
         cityInstance.alcalde = data.alcalde || "";
         cityInstance.region = data.region || "";
         cityInstance.turno = data.turno ?? 1;

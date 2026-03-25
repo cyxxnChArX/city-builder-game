@@ -9,6 +9,7 @@ import Park from "../Modelos/Park.js";
 import StorageService from "../Datos/StorageService.js";
 import CommercialBuilding from "../Modelos/CommercialBuilding.js";
 import IndustrialBuilding from "../Modelos/IndustrialBuilding.js";
+import RankingService from "./RankingService.js";
 
 class MapController {
 
@@ -17,7 +18,7 @@ class MapController {
     //  FACTORY DE EDIFICIOS
     static crearEdificio(tipo, x, y) {
 
-        const id = `${tipo}_${Date.now()}`;
+        const id = `${tipo}_${x}_${y}_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
 
         switch (tipo) {
 
@@ -136,6 +137,7 @@ class MapController {
                         if (demolido) {
                             cell.className = "grid-cell";
                             StorageService.saveGame(city);
+                            RankingService.updateCityRanking(city);
                         }
                         return;
                     }
@@ -150,6 +152,7 @@ class MapController {
                     if (construido) {
                         cell.classList.add(building.tipo || modo);
                         StorageService.saveGame(city);
+                        RankingService.updateCityRanking(city);
                     }
 
                 });

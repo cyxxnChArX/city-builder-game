@@ -66,9 +66,7 @@ class ScoringSystem {
 
     //solo puede usarse con un objeto creado.
     static updateCityScore(city) {
-        const citizenSystem = new CitizensSystem();
-        city.felicidadPromedio = citizenSystem.calcularFelicidadPromedio(city);
-
+        
         const population = city.citizens.length;
         const numberOfBuildings = city.buildings.length;
         const bonuses = ScoringSystem.calculateBonuses(city);

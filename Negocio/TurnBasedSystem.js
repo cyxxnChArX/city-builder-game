@@ -56,20 +56,25 @@ class TurnBasedSystem {
 
     executeTurn() {
 
-        this.city.turno++;
+        if (this.city.gameOver) {
+            this.stop();
+            return;
+        }
 
-        this.calculateProduction();
+        this.city.turno++;
+        
+        this.applyMaintenance();
 
         this.calculateConsumption();
 
-        this.applyMaintenance();
+        this.calculateProduction();
 
         this.citizenSystem.procesarTurno(this.city);
 
         ScoringSystem.updateCityScore(this.city);
 
         RankingService.updateCityRanking(this.city);
-
+        
         this.checkGameOver();
 
         // ESTO VA AQUI para que en cada turno se actualice lo que se ve en la parte de arriba
@@ -221,6 +226,7 @@ class TurnBasedSystem {
 
     saveGame() {
         StorageService.saveGame(this.city);
+        RankingService.updateCityRanking(this.city);
     }
 
 }

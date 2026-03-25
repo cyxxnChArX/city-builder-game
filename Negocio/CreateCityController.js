@@ -5,6 +5,7 @@ import StorageService from "../Datos/StorageService.js";
 import MapController from "./MapController.js";
 import TurnBasedSystem from "./TurnBasedSystem.js";
 import UIController from "./UIController.js";
+import RankingService from "./RankingService.js";
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -49,11 +50,12 @@ document.addEventListener("DOMContentLoaded", function () {
             turnDuration: turnDuration
         };       
 
+        StorageService.saveGame(city);
+        RankingService.updateCityRanking(city);
+
         //  CREAR SISTEMA DE TURNOS DESPUÉS DE CREAR CITY
         const turnSystem = new TurnBasedSystem(city, turnDuration, min, max);
         turnSystem.start();
-
-        StorageService.saveGame(city);
 
         //  ACTUALIZAR UI COMPLETA
         UIController.update(city);
