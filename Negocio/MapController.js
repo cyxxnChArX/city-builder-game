@@ -170,6 +170,7 @@ class MapController {
         document.querySelectorAll("[data-build-type]").forEach(btn => {
             btn.addEventListener("click", () => {
                 MapController.modo = btn.dataset.buildType;
+                UIController.updateCurrentMode(MapController.modo || "Ninguno");
                 console.log("Modo:", MapController.modo);
             });
         });
@@ -177,12 +178,14 @@ class MapController {
         // CANCELAR
         document.getElementById("btnCancelMode").addEventListener("click", () => {
             MapController.modo = null;
+            UIController.updateCurrentMode(MapController.modo || "Ninguno");
             console.log("Modo cancelado");
         });
 
         // DEMOLER
         document.getElementById("btnDemolishMode").addEventListener("click", () => {
             MapController.modo = "demolish";
+            UIController.updateCurrentMode(MapController.modo || "Ninguno");
             console.log("Modo demolición");
         });
     }

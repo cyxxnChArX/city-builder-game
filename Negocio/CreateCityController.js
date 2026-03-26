@@ -10,6 +10,8 @@ import RankingService from "./RankingService.js";
 
 document.addEventListener("DOMContentLoaded", function () {
 
+    let currentCity = null;
+
     //formulario
     const form = document.getElementById("citySetupForm");
 
@@ -41,6 +43,7 @@ document.addEventListener("DOMContentLoaded", function () {
         const resources = new Resources(money, electricity, water, food);
 
         const city = new City(null, nombre, map, resources, alcalde);
+        currentCity = city;
         city.region = region;
 
         //para que se guarden estos valores de min y max aparte de la duracion del sistema al cargar
@@ -101,6 +104,7 @@ document.addEventListener("DOMContentLoaded", function () {
     const savedCity = StorageService.loadActiveGame();
 
     if (savedCity) {
+        currentCity = savedCity;
         UIController.update(savedCity);
         MapController.renderMap(savedCity.map, savedCity);
         MapController.initUI();
@@ -114,6 +118,37 @@ document.addEventListener("DOMContentLoaded", function () {
             savedCity.config?.maxGrowth || 3
         );
         turnSystem.start();
+    }
+
+    const btnOpenCitizensModal = document.getElementById("btnOpenCitizensModal");
+    const citizensModalElement = document.getElementById("citizensModal");
+
+    if (btnOpenCitizensModal && citizensModalElement) {
+        btnOpenCitizensModal.addEventListener("click", () => {
+            if (!currentCity) {
+                alert("No hay una ciudad cargada.");
+                return;
+            }
+
+            UIController.renderCitizensTable(currentCity);
+
+            const modal = new bootstrap.Modal(citizensModalElement);
+            modal.show();
+        });
+    }
+
+    if (btnOpenCitizensModal && citizensModalElement) {
+        btnOpenCitizensModal.addEventListener("click", () => {
+            if (!currentCity) {
+                alert("No hay una ciudad cargada.");
+                return;
+            }
+
+            UIController.renderCitizensTable(currentCity);
+
+            const modal = new bootstrap.Modal(citizensModalElement);
+            modal.show();
+        });
     }
 
 });
