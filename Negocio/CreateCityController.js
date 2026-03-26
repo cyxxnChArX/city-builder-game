@@ -137,18 +137,4 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    if (btnOpenCitizensModal && citizensModalElement) {
-        btnOpenCitizensModal.addEventListener("click", () => {
-            if (!currentCity) {
-                alert("No hay una ciudad cargada.");
-                return;
-            }
-
-            UIController.renderCitizensTable(currentCity);
-
-            const modal = new bootstrap.Modal(citizensModalElement);
-            modal.show();
-        });
-    }
-
 });

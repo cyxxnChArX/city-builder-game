@@ -126,7 +126,7 @@ class CitizensSystem {
 
     calcularFelicidad(ciudadano, city) {
 
-        let felicidad = 50;
+        let felicidad = 20;
         //factores positivos
         if (ciudadano.tieneVivienda()){
             felicidad += 20;
@@ -159,6 +159,7 @@ class CitizensSystem {
 
         // si no tiene vivienda entonces no hace falta hacer lo siguiente
         if (!ciudadano.tieneVivienda()) {
+            felicidad = Math.max(0, Math.min(100, felicidad));
             ciudadano.felicidad = felicidad;
             return;
         }

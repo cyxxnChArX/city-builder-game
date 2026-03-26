@@ -87,6 +87,7 @@ class UIController {
         const commercialBuildingsValue = document.getElementById("commercialBuildingsValue");
         const industrialBuildingsValue = document.getElementById("industrialBuildingsValue");
         const serviceBuildingsValue = document.getElementById("serviceBuildingsValue");
+        const utilityPlantBuildingsValue = document.getElementById("utilityPlantBuildingsValue");
         const parksValue = document.getElementById("parksValue");
         const roadsValue = document.getElementById("roadsValue");
         const housingCapacityValue = document.getElementById("housingCapacityValue");
@@ -100,6 +101,7 @@ class UIController {
         let roadsCount = 0;
         let housingCapacity = 0;
         let jobCapacity = 0;
+        let utilityPlantCount = 0;
 
         for (const building of city.buildings) {
             if (building instanceof ResidentialBuilding) {
@@ -118,7 +120,7 @@ class UIController {
             } else if (building instanceof Road) {
                 roadsCount++;
             } else if (building instanceof UtilityPlant) {
-                // no suma a housing ni empleo, pero sí cuenta como edificio total
+                utilityPlantCount++;
             }
         }
 
@@ -127,6 +129,7 @@ class UIController {
         if (commercialBuildingsValue) commercialBuildingsValue.textContent = commercialCount;
         if (industrialBuildingsValue) industrialBuildingsValue.textContent = industrialCount;
         if (serviceBuildingsValue) serviceBuildingsValue.textContent = serviceCount;
+        if (utilityPlantBuildingsValue) utilityPlantBuildingsValue.textContent = utilityPlantCount;
         if (parksValue) parksValue.textContent = parksCount;
         if (roadsValue) roadsValue.textContent = roadsCount;
         if (housingCapacityValue) housingCapacityValue.textContent = housingCapacity;
