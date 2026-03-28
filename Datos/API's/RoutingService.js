@@ -1,4 +1,4 @@
-import Road from "../Modelos/Road.js";
+import Road from "../../Modelos/Road.js";
 
 class RoutingService {
     static BASE_URL = "http://127.0.0.1:5000";
