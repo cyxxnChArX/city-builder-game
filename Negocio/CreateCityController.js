@@ -11,6 +11,7 @@ import RankingService from "./RankingService.js";
 document.addEventListener("DOMContentLoaded", function () {
 
     let currentCity = null;
+    let turnSystem = null;
 
     //formulario
     const form = document.getElementById("citySetupForm");
@@ -57,7 +58,7 @@ document.addEventListener("DOMContentLoaded", function () {
         RankingService.updateCityRanking(city);
 
         //  CREAR SISTEMA DE TURNOS DESPUÉS DE CREAR CITY
-        const turnSystem = new TurnBasedSystem(city, turnDuration, min, max);
+        turnSystem = new TurnBasedSystem(city, turnDuration, min, max);
         turnSystem.start();
 
         //  ACTUALIZAR UI COMPLETA
@@ -73,6 +74,69 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // BOTÓN NUEVA CIUDAD
     const btnNewCity = document.getElementById("btnNewCity");
+    
+    //boton de parametros configurables en cualquier momento de la partida
+    const btnConfig = document.getElementById("btnConfig");
+    const configModalElement = document.getElementById("configModal");
+
+    if (btnConfig && configModalElement) {
+        btnConfig.addEventListener("click", () => {
+
+    if (!currentCity.config) {
+        // valores por defecto si no existe config
+        currentCity.config = {
+            turnDuration: 10000,
+            minGrowth: 1,
+            maxGrowth: 3
+        };
+    }
+
+    document.getElementById("configTurnDuration").value = currentCity.config.turnDuration / 1000;
+    document.getElementById("configMinGrowth").value = currentCity.config.minGrowth;
+    document.getElementById("configMaxGrowth").value = currentCity.config.maxGrowth;
+
+            const modal = new bootstrap.Modal(configModalElement);
+            modal.show();
+        });
+    }
+    const configForm = document.getElementById("configForm");
+
+    if (configForm) {
+        configForm.addEventListener("submit", (e) => {
+            e.preventDefault();
+
+            if (!currentCity || !turnSystem) {
+                alert("No hay sistema activo");
+                return;
+            }
+
+            const turnDuration = parseInt(document.getElementById("configTurnDuration").value) * 1000;
+            const min = parseInt(document.getElementById("configMinGrowth").value);
+            const max = parseInt(document.getElementById("configMaxGrowth").value);
+
+            if (min > max) {
+                alert("El mínimo no puede ser mayor que el máximo");
+                return;
+            }
+
+            //  actualizar config de la ciudad
+            currentCity.config.turnDuration = turnDuration;
+            currentCity.config.minGrowth = min;
+            currentCity.config.maxGrowth = max;
+
+            //  reiniciar sistema de turnos
+            turnSystem.stop();
+
+            turnSystem = new TurnBasedSystem(currentCity, turnDuration, min, max);
+            turnSystem.start();
+
+            // guardar cambios
+            StorageService.saveGame(currentCity);
+
+            alert("Configuración actualizada correctamente");
+        });
+    }
+
     const modalElement = document.getElementById("citySetupModal");
 
     btnNewCity.addEventListener("click", () => {
@@ -100,18 +164,57 @@ document.addEventListener("DOMContentLoaded", function () {
         regionSelect.appendChild(option);
     });
 
+    //boton dle ranking 
+    const btnOpenRanking = document.getElementById("btnOpenRanking");
+    const rankingModalElement = document.getElementById("rankingModal");
+
+    if (btnOpenRanking && rankingModalElement) {
+        btnOpenRanking.addEventListener("click", () => {
+
+            const ranking = RankingService.getRanking();
+
+            UIController.renderRanking(
+                ranking,
+                currentCity ? currentCity.id : null
+            );
+
+            const modal = new bootstrap.Modal(rankingModalElement);
+            modal.show();
+        });
+    }
+    const btnResetRanking = document.getElementById("btnResetRanking");
+
+    if (btnResetRanking) {
+        btnResetRanking.addEventListener("click", () => {
+
+            if (!confirm("¿Seguro que quieres borrar el ranking?")) return;
+
+            RankingService.clearRanking();
+
+            UIController.renderRanking([], null);
+        });
+    }
+    const btnExportRanking = document.getElementById("btnExportRanking");
+
+    if (btnExportRanking) {
+        btnExportRanking.addEventListener("click", () => {
+            RankingService.downloadRankingJSON();
+        });
+    }
+
     //  CARGAR CIUDAD GUARDADA
     const savedCity = StorageService.loadActiveGame();
 
     if (savedCity) {
         currentCity = savedCity;
         UIController.update(savedCity);
+        RankingService.updateCityRanking(currentCity);
         MapController.renderMap(savedCity.map, savedCity);
         MapController.initUI();
 
         //el tiempo correra de nuevo cada vez que se cargue la ciudad para que turno avance
         // Tomara los alores min max y turn duracion para que no se conserven con cada carga
-        const turnSystem = new TurnBasedSystem(
+        turnSystem = new TurnBasedSystem(
             savedCity,
             savedCity.config?.turnDuration || 10000,
             savedCity.config?.minGrowth || 1,

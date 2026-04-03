@@ -218,6 +218,20 @@ class TurnBasedSystem {
             this.stop();
         }
 
+        if (this.city.resources.alimentos < 0) {
+
+            alert("Game Over: alimentos negativos");
+            this.city.gameOver = true;
+            this.stop();
+        }
+        
+        if (this.city.resources.dinero < 0) {
+
+            alert("Game Over: dinero negativo");
+            this.city.gameOver = true;
+            this.stop();
+        }
+
     }
 
     //==============================
