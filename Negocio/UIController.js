@@ -209,6 +209,206 @@ class UIController {
                 currentIndex >= 0 ? `Tu ciudad: #${currentIndex + 1}` : "Tu ciudad: fuera del top mostrado";
         }
     }
+    static updatePauseButton(isPaused) {
+        const btnPauseTurn = document.getElementById("btnPauseTurn");
+        if (!btnPauseTurn) return;
+
+        btnPauseTurn.textContent = isPaused ? "Reanudar" : "Pausar";
+        btnPauseTurn.classList.remove("btn-secondary", "btn-success");
+        btnPauseTurn.classList.add(isPaused ? "btn-success" : "btn-secondary");
+    }
+
+    static renderScoreBreakdown(city) {
+        if (!city) return;
+
+        const scorePopulation = document.getElementById("scorePopulation");
+        const scoreHappiness = document.getElementById("scoreHappiness");
+        const scoreMoney = document.getElementById("scoreMoney");
+        const scoreBuildings = document.getElementById("scoreBuildings");
+        const scoreElectricity = document.getElementById("scoreElectricity");
+        const scoreWater = document.getElementById("scoreWater");
+        const scoreBonuses = document.getElementById("scoreBonuses");
+        const scorePenalties = document.getElementById("scorePenalties");
+        const scoreTotal = document.getElementById("scoreTotal");
+
+        const unemployedCount = city.citizens.filter(citizen => citizen.job === null).length;
+
+        const populationPoints = city.citizens.length * 10;
+        const happinessPoints = (city.felicidadPromedio ?? 0) * 5;
+        const moneyPoints = Math.floor((city.resources?.dinero ?? 0) / 100);
+        const buildingPoints = city.buildings.length * 50;
+        const electricityPoints = (city.resources?.electricidad ?? 0) * 2;
+        const waterPoints = (city.resources?.agua ?? 0) * 2;
+
+        let bonuses = 0;
+        if (city.citizens.length > 0 && unemployedCount === 0) bonuses += 500;
+        if ((city.felicidadPromedio ?? 0) > 80) bonuses += 300;
+        if (
+            (city.resources?.dinero ?? 0) > 0 &&
+            (city.resources?.electricidad ?? 0) > 0 &&
+            (city.resources?.agua ?? 0) > 0 &&
+            (city.resources?.alimentos ?? 0) > 0
+        ) bonuses += 200;
+        if (city.citizens.length > 1000) bonuses += 1000;
+
+        let penalties = 0;
+        if ((city.resources?.dinero ?? 0) < 0) penalties += 500;
+        if ((city.resources?.electricidad ?? 0) < 0) penalties += 300;
+        if ((city.resources?.agua ?? 0) < 0) penalties += 300;
+        if ((city.felicidadPromedio ?? 0) < 40) penalties += 400;
+        penalties += unemployedCount * 10;
+
+        const total =
+            populationPoints +
+            happinessPoints +
+            moneyPoints +
+            buildingPoints +
+            electricityPoints +
+            waterPoints +
+            bonuses -
+            penalties;
+
+        if (scorePopulation) scorePopulation.textContent = populationPoints;
+        if (scoreHappiness) scoreHappiness.textContent = Math.round(happinessPoints);
+        if (scoreMoney) scoreMoney.textContent = moneyPoints;
+        if (scoreBuildings) scoreBuildings.textContent = buildingPoints;
+        if (scoreElectricity) scoreElectricity.textContent = electricityPoints;
+        if (scoreWater) scoreWater.textContent = waterPoints;
+        if (scoreBonuses) scoreBonuses.textContent = bonuses;
+        if (scorePenalties) scorePenalties.textContent = penalties;
+        if (scoreTotal) scoreTotal.textContent = Math.round(total);
+    }
+
+    static formatBuildingType(building) {
+        if (!building) return "---";
+
+        if (building instanceof Road) return "Vía";
+        if (building instanceof ResidentialBuilding) return "Residencial";
+        if (building instanceof CommercialBuilding) return "Comercial";
+        if (building instanceof IndustrialBuilding) return "Industrial";
+        if (building instanceof ServiceBuilding) return "Servicio";
+        if (building instanceof UtilityPlant) return "Utilidad";
+        if (building instanceof Park) return "Parque";
+
+        return building.constructor.name;
+    }
+
+    static formatBuildingName(building) {
+        if (!building) return "---";
+
+        if (building instanceof Road) return "Vía";
+        if (building instanceof Park) return "Parque";
+
+        const tipo = building.tipo || building.constructor.name;
+
+        return tipo
+            .replaceAll("_", " ")
+            .replace(/\b\w/g, char => char.toUpperCase());
+    }
+
+    static renderBuildingInfo(building) {
+        if (!building) return;
+
+        const typeEl = document.getElementById("buildingInfoType");
+        const nameEl = document.getElementById("buildingInfoName");
+        const costEl = document.getElementById("buildingInfoCost");
+        const maintenanceEl = document.getElementById("buildingInfoMaintenance");
+        const consumptionEl = document.getElementById("buildingInfoConsumption");
+        const productionEl = document.getElementById("buildingInfoProduction");
+        const capacityEl = document.getElementById("buildingInfoCapacity");
+        const occupancyEl = document.getElementById("buildingInfoOccupancy");
+        const residentsEl = document.getElementById("buildingInfoResidents");
+        const employeesEl = document.getElementById("buildingInfoEmployees");
+        const happinessEl = document.getElementById("buildingInfoAverageHappiness");
+
+        let consumption = [];
+        let production = [];
+        let capacity = "No aplica";
+        let occupancy = "No aplica";
+        let residents = "No aplica";
+        let employees = "No aplica";
+        let avgHappiness = "No aplica";
+
+        if (building.consumoElectricidad) {
+            consumption.push(`Electricidad: ${building.consumoElectricidad}`);
+        }
+
+        if (building.consumoAgua) {
+            consumption.push(`Agua: ${building.consumoAgua}`);
+        }
+
+        if (building instanceof CommercialBuilding) {
+            production.push(`Dinero: ${building.ingresoPorTurno}/turno`);
+            capacity = `${building.capacidadEmpleo} empleos`;
+            occupancy = `${building.empleados.length}/${building.capacidadEmpleo}`;
+            employees = building.empleados.length;
+        }
+
+        if (building instanceof IndustrialBuilding) {
+            if (building.tipo === IndustrialBuilding.TIPOS.FABRICA) {
+                production.push(`Dinero: ${building.produccionPorTurno}/turno`);
+            } else if (building.tipo === IndustrialBuilding.TIPOS.GRANJA) {
+                production.push(`Alimentos: ${building.produccionPorTurno}/turno`);
+            }
+
+            capacity = `${building.capacidadEmpleo} empleos`;
+            occupancy = `${building.empleados.length}/${building.capacidadEmpleo}`;
+            employees = building.empleados.length;
+        }
+
+        if (building instanceof UtilityPlant) {
+            if (building.produccionElectricidad) {
+                production.push(`Electricidad: ${building.produccionElectricidad}/turno`);
+            }
+
+            if (building.produccionAgua) {
+                production.push(`Agua: ${building.produccionAgua}/turno`);
+            }
+        }
+
+        if (building instanceof ServiceBuilding) {
+            production.push(`Felicidad: +${building.beneficioFelicidad}`);
+            capacity = `Radio: ${building.radio} celdas`;
+        }
+
+        if (building instanceof Park) {
+            production.push(`Felicidad: +${building.beneficioFelicidad}`);
+        }
+
+        if (building instanceof ResidentialBuilding) {
+            capacity = `${building.capacidad} ciudadanos`;
+            occupancy = `${building.residentes.length}/${building.capacidad}`;
+            residents = building.residentes.length;
+            avgHappiness = Math.round(building.calcularFelicidadPromedio());
+        }
+
+        if (building instanceof Road) {
+            consumption = ["No consume recursos"];
+            production = ["Permite tránsito"];
+        }
+
+        if (typeEl) typeEl.textContent = this.formatBuildingType(building);
+        if (nameEl) nameEl.textContent = this.formatBuildingName(building);
+        if (costEl) costEl.textContent = `$${building.costo ?? 0}`;
+        if (maintenanceEl) maintenanceEl.textContent = `$${Math.round(building.costoMantenimiento ?? 0)}`;
+        if (consumptionEl) consumptionEl.textContent = consumption.length ? consumption.join(" | ") : "No consume recursos";
+        if (productionEl) productionEl.textContent = production.length ? production.join(" | ") : "No produce recursos";
+        if (capacityEl) capacityEl.textContent = capacity;
+        if (occupancyEl) occupancyEl.textContent = occupancy;
+        if (residentsEl) residentsEl.textContent = residents;
+        if (employeesEl) employeesEl.textContent = employees;
+        if (happinessEl) happinessEl.textContent = avgHappiness;
+    }
+
+    static updateRouteInfo(originText = "sin seleccionar", destinationText = "sin seleccionar", statusText = "inactivo") {
+        const routeOriginText = document.getElementById("routeOriginText");
+        const routeDestinationText = document.getElementById("routeDestinationText");
+        const routeStatusText = document.getElementById("routeStatusText");
+
+        if (routeOriginText) routeOriginText.textContent = `Origen: ${originText}`;
+        if (routeDestinationText) routeDestinationText.textContent = `Destino: ${destinationText}`;
+        if (routeStatusText) routeStatusText.textContent = `Estado: ${statusText}`;
+    }
 }
 
 export default UIController;

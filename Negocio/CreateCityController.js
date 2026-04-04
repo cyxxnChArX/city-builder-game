@@ -6,12 +6,46 @@ import MapController from "./MapController.js";
 import TurnBasedSystem from "./TurnBasedSystem.js";
 import UIController from "./UIController.js";
 import RankingService from "./RankingService.js";
+import ScoringSystem from "./ScoringSystem.js";
 
 
 document.addEventListener("DOMContentLoaded", function () {
 
     let currentCity = null;
     let turnSystem = null;
+
+    function renderLoadedCity(city) {
+        if (!city) return;
+
+        currentCity = city;
+
+        UIController.update(city);
+        UIController.updatePauseButton(false);
+
+        RankingService.updateCityRanking(currentCity);
+
+        MapController.renderMap(city.map, city);
+        MapController.initUI();
+
+        if (turnSystem) {
+            turnSystem.stop();
+        }
+
+        turnSystem = new TurnBasedSystem(
+            city,
+            city.config?.turnDuration || 10000,
+            city.config?.minGrowth || 1,
+            city.config?.maxGrowth || 3
+        );
+
+        turnSystem.start();
+    }
+
+    function stopCurrentTurnSystem() {
+        if (turnSystem) {
+            turnSystem.stop();
+        }
+    }
 
     //formulario
     const form = document.getElementById("citySetupForm");
@@ -44,7 +78,6 @@ document.addEventListener("DOMContentLoaded", function () {
         const resources = new Resources(money, electricity, water, food);
 
         const city = new City(null, nombre, map, resources, alcalde);
-        currentCity = city;
         city.region = region;
 
         //para que se guarden estos valores de min y max aparte de la duracion del sistema al cargar
@@ -55,17 +88,10 @@ document.addEventListener("DOMContentLoaded", function () {
         };       
 
         StorageService.saveGame(city);
+        ScoringSystem.updateCityScore(city);
         RankingService.updateCityRanking(city);
 
-        //  CREAR SISTEMA DE TURNOS DESPUÉS DE CREAR CITY
-        turnSystem = new TurnBasedSystem(city, turnDuration, min, max);
-        turnSystem.start();
-
-        //  ACTUALIZAR UI COMPLETA
-        UIController.update(city);
-
-        MapController.renderMap(city.map, city);
-        MapController.initUI();
+        renderLoadedCity(city);
 
         console.log("Ciudad creada:", city);
 
@@ -144,6 +170,72 @@ document.addEventListener("DOMContentLoaded", function () {
         modal.show();
     });
 
+    const btnContinueGame = document.getElementById("btnContinueGame");
+    if (btnContinueGame) {
+        btnContinueGame.addEventListener("click", () => {
+            const savedCityToContinue = StorageService.loadLatestGame();
+
+            if (!savedCityToContinue) {
+                alert("No hay una partida guardada para continuar.");
+                return;
+            }
+
+            renderLoadedCity(savedCityToContinue);
+            alert(`Partida cargada: ${savedCityToContinue.nombre}`);
+        });
+    }
+
+    const btnExportCity = document.getElementById("btnExportCity");
+    if (btnExportCity) {
+        btnExportCity.addEventListener("click", () => {
+            if (!currentCity) {
+                alert("No hay una ciudad cargada para exportar.");
+                return;
+            }
+
+            StorageService.downloadCityJSON(currentCity);
+        });
+    }
+
+    const btnPauseTurn = document.getElementById("btnPauseTurn");
+    if (btnPauseTurn) {
+        btnPauseTurn.addEventListener("click", () => {
+            if (!currentCity || !turnSystem) {
+                alert("No hay una partida activa.");
+                return;
+            }
+
+            const isPaused = turnSystem.turnInterval === null;
+
+            if (isPaused) {
+                turnSystem.start();
+                UIController.updatePauseButton(false);
+            } else {
+                turnSystem.stop();
+                UIController.updatePauseButton(true);
+            }
+        });
+    }
+
+    const btnOpenScoreBreakdown = document.getElementById("btnOpenScoreBreakdown");
+    const scoreBreakdownModalElement = document.getElementById("scoreBreakdownModal");
+
+    if (btnOpenScoreBreakdown && scoreBreakdownModalElement) {
+        btnOpenScoreBreakdown.addEventListener("click", () => {
+            if (!currentCity) {
+                alert("No hay una ciudad cargada.");
+                return;
+            }
+
+            ScoringSystem.updateCityScore(currentCity);
+            UIController.update(currentCity);
+            UIController.renderScoreBreakdown(currentCity);
+
+            const modal = new bootstrap.Modal(scoreBreakdownModalElement);
+            modal.show();
+        });
+    }
+
     const regionSelect = document.getElementById("regionSelect");
 
     const ciudades = [
@@ -206,21 +298,8 @@ document.addEventListener("DOMContentLoaded", function () {
     const savedCity = StorageService.loadActiveGame();
 
     if (savedCity) {
-        currentCity = savedCity;
-        UIController.update(savedCity);
-        RankingService.updateCityRanking(currentCity);
-        MapController.renderMap(savedCity.map, savedCity);
-        MapController.initUI();
-
-        //el tiempo correra de nuevo cada vez que se cargue la ciudad para que turno avance
-        // Tomara los alores min max y turn duracion para que no se conserven con cada carga
-        turnSystem = new TurnBasedSystem(
-            savedCity,
-            savedCity.config?.turnDuration || 10000,
-            savedCity.config?.minGrowth || 1,
-            savedCity.config?.maxGrowth || 3
-        );
-        turnSystem.start();
+        ScoringSystem.updateCityScore(savedCity);
+        renderLoadedCity(savedCity);
     }
 
     const btnOpenCitizensModal = document.getElementById("btnOpenCitizensModal");

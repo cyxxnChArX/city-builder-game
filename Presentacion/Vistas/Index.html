@@ -670,6 +670,63 @@
     </div>
   </div>
 
+  <!-- MODAL DESGLOSE DE PUNTUACIÓN -->
+  <div class="modal fade" id="scoreBreakdownModal" tabindex="-1" aria-labelledby="scoreBreakdownModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <h5 class="modal-title" id="scoreBreakdownModalLabel">Desglose de puntuación</h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+        </div>
+
+        <div class="modal-body">
+          <div class="list-group">
+            <div class="list-group-item d-flex justify-content-between">
+              <span>Puntos por población</span>
+              <strong id="scorePopulation">0</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span>Puntos por felicidad</span>
+              <strong id="scoreHappiness">0</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span>Puntos por dinero</span>
+              <strong id="scoreMoney">0</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span>Puntos por edificios</span>
+              <strong id="scoreBuildings">0</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span>Puntos por electricidad</span>
+              <strong id="scoreElectricity">0</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span>Puntos por agua</span>
+              <strong id="scoreWater">0</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span>Bonificaciones</span>
+              <strong id="scoreBonuses">0</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between">
+              <span>Penalizaciones</span>
+              <strong id="scorePenalties">0</strong>
+            </div>
+            <div class="list-group-item d-flex justify-content-between active">
+              <span>Total</span>
+              <strong id="scoreTotal">0</strong>
+            </div>
+          </div>
+        </div>
+
+        <div class="modal-footer">
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Cerrar</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <!-- MODAL: CONTINUAR PARTIDA -->
   <div class="modal fade" id="continueGameModal" tabindex="-1" aria-labelledby="continueGameModalLabel" aria-hidden="true">
     <div class="modal-dialog">

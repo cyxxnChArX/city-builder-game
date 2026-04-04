@@ -59,30 +59,51 @@ class ScoringSystem {
         return penalties;
     }
 
+    //==========================================
+    // Método para obtener un desglose detallado del puntaje de la ciudad
+    //==========================================
 
+    static getScoreBreakdown(city) {
+        const populationPoints = city.citizens.length * 10;
+        const happinessPoints = (city.felicidadPromedio ?? 0) * 5;
+        const moneyPoints = Math.floor((city.resources?.dinero ?? 0) / 100);
+        const buildingPoints = city.buildings.length * 50;
+        const electricityPoints = (city.resources?.electricidad ?? 0) * 2;
+        const waterPoints = (city.resources?.agua ?? 0) * 2;
+
+        const bonuses = ScoringSystem.calculateBonuses(city);
+        const penalties = ScoringSystem.calculatePenalties(city);
+
+        const total =
+            populationPoints +
+            happinessPoints +
+            moneyPoints +
+            buildingPoints +
+            electricityPoints +
+            waterPoints +
+            bonuses -
+            penalties;
+
+        return {
+            populationPoints,
+            happinessPoints,
+            moneyPoints,
+            buildingPoints,
+            electricityPoints,
+            waterPoints,
+            bonuses,
+            penalties,
+            total
+        };
+    }
     //==========================================
     // Método para actualizar el puntaje de la ciudad
     //==========================================
 
     //solo puede usarse con un objeto creado.
     static updateCityScore(city) {
-        
-        const population = city.citizens.length;
-        const numberOfBuildings = city.buildings.length;
-        const bonuses = ScoringSystem.calculateBonuses(city);
-        const penalties = ScoringSystem.calculatePenalties(city);
-
-        city.puntaje =
-            (population * 10) +
-            (city.felicidadPromedio * 5) +
-            Math.floor(city.resources.dinero / 100) +
-            (numberOfBuildings * 50) +
-            (city.resources.electricidad * 2) +
-            (city.resources.agua * 2) +
-            bonuses -
-            penalties;
-
-        return city.puntaje;
+        const breakdown = ScoringSystem.getScoreBreakdown(city);
+        city.puntaje = breakdown.total;
     }
 }
 

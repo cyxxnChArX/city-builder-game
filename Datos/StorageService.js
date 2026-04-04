@@ -539,6 +539,39 @@ class StorageService {
 
         return instance;
     }
+
+    static exportCityToJSON(city) {
+        if (!city) {
+            throw new Error("No hay ciudad cargada para exportar.");
+        }
+
+        const serializedCity = this.serializeCity(city);
+        return JSON.stringify(serializedCity, null, 2);
+    }
+
+    static downloadCityJSON(city) {
+        const jsonContent = this.exportCityToJSON(city);
+
+        const safeName = (city.nombre || "ciudad")
+            .toLowerCase()
+            .trim()
+            .replace(/\s+/g, "_")
+            .replace(/[^a-z0-9_]/g, "");
+
+        const fileName = `ciudad_${safeName || "sin_nombre"}_${new Date().toISOString().slice(0, 10)}.json`;
+
+        const blob = new Blob([jsonContent], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = fileName;
+        document.body.appendChild(a);
+        a.click();
+        a.remove();
+
+        URL.revokeObjectURL(url);
+    }
 }
 
 export default StorageService;
