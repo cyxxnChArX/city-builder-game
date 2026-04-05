@@ -409,6 +409,20 @@ class UIController {
         if (routeDestinationText) routeDestinationText.textContent = `Destino: ${destinationText}`;
         if (routeStatusText) routeStatusText.textContent = `Estado: ${statusText}`;
     }
+
+    static renderWeather(weather) {
+        if (!weather) return;
+        
+        const tempEl = document.getElementById("weatherTemp");
+        const windEl = document.getElementById("weatherWind");
+        const humidityEl = document.getElementById("weatherHumidity");
+        const descEl = document.getElementById("weatherCondition");
+
+        if (tempEl) tempEl.textContent = `${weather.temperatura}°C`;
+        if (windEl) windEl.textContent = `${weather.viento} km/h`;
+        if (humidityEl) humidityEl.textContent = `${weather.humedad}%`;
+        if (descEl) descEl.textContent = weather.descripcion;
+    }
 }
 
 export default UIController;

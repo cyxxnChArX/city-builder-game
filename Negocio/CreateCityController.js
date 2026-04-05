@@ -7,12 +7,15 @@ import TurnBasedSystem from "./TurnBasedSystem.js";
 import UIController from "./UIController.js";
 import RankingService from "./RankingService.js";
 import ScoringSystem from "./ScoringSystem.js";
+import WeatherService from "../Datos/API's/WeatherService.js";
+import UbicationService from "../Datos/API's/UbicationService.js";
 
 
 document.addEventListener("DOMContentLoaded", function () {
 
     let currentCity = null;
     let turnSystem = null;
+    let weatherInterval = null;
 
     function renderLoadedCity(city) {
         if (!city) return;
@@ -39,6 +42,16 @@ document.addEventListener("DOMContentLoaded", function () {
         );
 
         turnSystem.start();
+    }
+
+    function startWeatherAutoUpdate() {
+        updateWeather();
+
+        if (weatherInterval) {
+            clearInterval(weatherInterval);
+        }
+
+        weatherInterval = setInterval(updateWeather, 60000);
     }
 
     function stopCurrentTurnSystem() {
@@ -92,6 +105,7 @@ document.addEventListener("DOMContentLoaded", function () {
         RankingService.updateCityRanking(city);
 
         renderLoadedCity(city);
+        startWeatherAutoUpdate();
 
         console.log("Ciudad creada:", city);
 
@@ -181,6 +195,7 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             renderLoadedCity(savedCityToContinue);
+            startWeatherAutoUpdate();
             alert(`Partida cargada: ${savedCityToContinue.nombre}`);
         });
     }
@@ -300,6 +315,7 @@ document.addEventListener("DOMContentLoaded", function () {
     if (savedCity) {
         ScoringSystem.updateCityScore(savedCity);
         renderLoadedCity(savedCity);
+        startWeatherAutoUpdate();
     }
 
     const btnOpenCitizensModal = document.getElementById("btnOpenCitizensModal");
@@ -317,6 +333,44 @@ document.addEventListener("DOMContentLoaded", function () {
             const modal = new bootstrap.Modal(citizensModalElement);
             modal.show();
         });
+    }
+
+    async function updateWeather() {
+        try {
+            if (!currentCity || !currentCity.region) {
+                UIController.renderWeather(null, "---");
+                return;
+            }
+
+            const coordenadas = await UbicationService.getCoordenadasCiudad(
+                currentCity.region,
+                "Colombia"
+            );
+
+            if (!coordenadas) {
+                UIController.renderWeather(null, currentCity.region);
+                return;
+            }
+
+            const weather = await WeatherService.getWeather(
+                coordenadas.lat,
+                coordenadas.lon
+            );
+
+            UIController.renderWeather(weather, currentCity.region);
+
+        } catch (error) {
+            console.error("Error cargando clima:", error);
+            UIController.renderWeather(null, currentCity?.region || "---");
+        }
+    }
+
+    window.updateWeather = updateWeather;
+
+    const btnRefreshWeather = document.getElementById("btnRefreshWeather");
+
+    if (btnRefreshWeather) {
+        btnRefreshWeather.addEventListener("click", updateWeather);
     }
 
 });

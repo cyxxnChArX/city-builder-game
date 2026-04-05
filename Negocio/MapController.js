@@ -24,6 +24,10 @@ class MapController {
     static routeDestinationBuilding = null;
     static currentRouteCells = [];
 
+    static zoomLevel = 1;
+    static minZoom = 0.5;
+    static maxZoom = 2;
+
     static crearEdificio(tipo, x, y) {
         const id = `${tipo}_${x}_${y}_${Date.now()}_${Math.random().toString(36).slice(2,6)}`;
 
@@ -176,6 +180,7 @@ class MapController {
         }
 
         grid.style.gridTemplateColumns = `repeat(${map.ancho}, 42px)`;
+        this.applyZoom();
     }
 
     static initUI() {
@@ -262,6 +267,28 @@ class MapController {
                         if (modalInstance) modalInstance.hide();
                     }
                 }
+            });
+        }
+
+        const btnZoomIn = document.getElementById("btnZoomIn");
+        const btnZoomOut = document.getElementById("btnZoomOut");
+        const btnCenterMap = document.getElementById("btnCenterMap");
+
+        if (btnZoomIn) {
+            btnZoomIn.addEventListener("click", () => {
+                MapController.zoomIn();
+            });
+        }
+
+        if (btnZoomOut) {
+            btnZoomOut.addEventListener("click", () => {
+                MapController.zoomOut();
+            });
+        }
+
+        if (btnCenterMap) {
+            btnCenterMap.addEventListener("click", () => {
+                MapController.centerMap();
             });
         }
     }
@@ -390,6 +417,38 @@ class MapController {
         if (MapController.currentCity) {
             MapController.renderMap(MapController.currentCity.map, MapController.currentCity);
         }
+    }
+
+    static applyZoom() {
+        const grid = document.getElementById("cityGrid");
+        if (!grid) return;
+
+        grid.style.transform = `scale(${this.zoomLevel})`;
+        grid.style.transformOrigin = "center center";
+    }
+
+    static zoomIn() {
+        if (this.zoomLevel < this.maxZoom) {
+            this.zoomLevel += 0.1;
+            this.applyZoom();
+        }
+    }
+
+    static zoomOut() {
+        if (this.zoomLevel > this.minZoom) {
+            this.zoomLevel -= 0.1;
+            this.applyZoom();
+        }
+    }
+
+    static centerMap() {
+        const container = document.getElementById("mapContainer");
+        const grid = document.getElementById("cityGrid");
+
+        if (!container || !grid) return;
+
+        container.scrollTop = (grid.scrollHeight - container.clientHeight) / 2;
+        container.scrollLeft = (grid.scrollWidth - container.clientWidth) / 2;
     }
 }
 

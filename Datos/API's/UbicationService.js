@@ -1,9 +1,7 @@
 class UbicationService {
-    constructor() {
-        this.geoURL = "https://nominatim.openstreetmap.org/search";
-    }
+    static geoURL = "https://nominatim.openstreetmap.org/search";
 
-    async getCoordenadasCiudad(nombreCiudad, pais = "Colombia") {
+    static async getCoordenadasCiudad(nombreCiudad, pais = "Colombia") {
         try {
             console.log("Buscando ciudad...");
 
@@ -41,3 +39,5 @@ class UbicationService {
         }
     }
 }
+
+export default UbicationService;

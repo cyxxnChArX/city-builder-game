@@ -1,9 +1,7 @@
 class WeatherService {
-    constructor() {
-        this.apiClimaURL = "https://api.open-meteo.com/v1/forecast";
-    }
+    static apiClimaURL = "https://api.open-meteo.com/v1/forecast";
 
-    async getClima(lat, lon) {
+    static async getWeather(lat, lon) {
         try {
             const response = await fetch(
                 `${this.apiClimaURL}?latitude=${lat}&longitude=${lon}&current_weather=true`
@@ -21,6 +19,7 @@ class WeatherService {
             return {
                 temperatura: clima.temperature,
                 viento: clima.windspeed,
+                humedad: clima.relativehumidity ?? null,
                 descripcion: this.interpretarWeatherCode(clima.weathercode)
             };
 
@@ -30,7 +29,7 @@ class WeatherService {
         }
     }
 
-    interpretarWeatherCode(code) {
+    static interpretarWeatherCode(code) {
         if (code === 0) return "Soleado";
         if ([1, 2].includes(code)) return "Parcialmente nublado";
         if (code === 3) return "Nublado";
@@ -45,3 +44,5 @@ class WeatherService {
         return "Clima desconocido";
     }
 }
+
+export default WeatherService;
