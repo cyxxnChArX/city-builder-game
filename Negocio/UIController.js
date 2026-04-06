@@ -423,6 +423,34 @@ class UIController {
         if (humidityEl) humidityEl.textContent = `${weather.humedad}%`;
         if (descEl) descEl.textContent = weather.descripcion;
     }
+    static renderNews(noticias) {
+        const newsList = document.getElementById("newsList");
+        if (!newsList) return;
+
+        newsList.innerHTML = "";
+
+        if (!noticias || noticias.length === 0) {
+            newsList.innerHTML = "<p>No hay noticias disponibles</p>";
+            return;
+        }
+
+        noticias.slice(0, 3).forEach(noticia => {
+            const article = document.createElement("article");
+            article.classList.add("news-item", "card");
+
+            article.innerHTML = `
+                <div class="card-body news-content">
+                    <h4 class="h6">${noticia.titulo}</h4>
+                    <p class="mb-2"><small>Fuente: ${noticia.fuente}</small></p>
+                    <a href="${noticia.url}" target="_blank" class="btn btn-sm btn-outline-primary">
+                        Ver noticia
+                    </a>
+                </div>
+            `;
+
+            newsList.appendChild(article);
+        });
+    }
 }
 
 export default UIController;

@@ -9,6 +9,7 @@ import RankingService from "./RankingService.js";
 import ScoringSystem from "./ScoringSystem.js";
 import WeatherService from "../Datos/API's/WeatherService.js";
 import UbicationService from "../Datos/API's/UbicationService.js";
+import NewsService from "../Datos/API's/NewsService.js";
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -16,6 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let currentCity = null;
     let turnSystem = null;
     let weatherInterval = null;
+    let newsService = new NewsService();
 
     function renderLoadedCity(city) {
         if (!city) return;
@@ -106,6 +108,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         renderLoadedCity(city);
         startWeatherAutoUpdate();
+        updateNews();
 
         console.log("Ciudad creada:", city);
 
@@ -196,6 +199,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
             renderLoadedCity(savedCityToContinue);
             startWeatherAutoUpdate();
+            updateNews();
             alert(`Partida cargada: ${savedCityToContinue.nombre}`);
         });
     }
@@ -316,6 +320,7 @@ document.addEventListener("DOMContentLoaded", function () {
         ScoringSystem.updateCityScore(savedCity);
         renderLoadedCity(savedCity);
         startWeatherAutoUpdate();
+        updateNews();
     }
 
     const btnOpenCitizensModal = document.getElementById("btnOpenCitizensModal");
@@ -373,4 +378,21 @@ document.addEventListener("DOMContentLoaded", function () {
         btnRefreshWeather.addEventListener("click", updateWeather);
     }
 
+    async function updateNews() {
+        try {
+            if (!currentCity || !currentCity.region) return;
+
+            const noticias = await newsService.getNoticiasPorCiudad(currentCity.region);
+
+            UIController.renderNews(noticias);
+
+        } catch (error) {
+            console.error("Error cargando noticias:", error);
+        }
+    }
+    const btnRefreshNews = document.getElementById("btnRefreshNews");
+
+    if (btnRefreshNews) {
+        btnRefreshNews.addEventListener("click", updateNews);
+    }
 });
