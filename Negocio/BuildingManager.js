@@ -63,6 +63,16 @@ class BuildingManager {
             return false;
         }
 
+        // Verificación especial para vías: no permitir demoler si deja edificios desconectados
+        if (building instanceof Road) {
+            const affectedBuildings = this.getBuildingsThatWouldBeDisconnected(city, x, y);
+            if (affectedBuildings.length > 0) {
+                const buildingNames = affectedBuildings.map(b => b.constructor.name).join(', ');
+                alert(`No se puede demoler esta vía porque dejaría desconectados los siguientes edificios: ${buildingNames}`);
+                return false;
+            }
+        }
+
         if (building instanceof ResidentialBuilding) {
 
             // desalojar ciudadanos llamando al metodo del edificio residential dejando de una vez a los ciudadanos sin casa
@@ -87,6 +97,59 @@ class BuildingManager {
         console.log("Edificio demolido. Dinero recuperado:", dineroRecuperado);
 
         return true;
+    }
+
+    // Verificar qué edificios quedarían desconectados si se demuele una vía
+    getBuildingsThatWouldBeDisconnected(city, roadX, roadY) {
+        const affectedBuildings = [];
+        const directions = [
+            { dx: 0, dy: -1 }, // arriba
+            { dx: 0, dy: 1 },  // abajo
+            { dx: -1, dy: 0 }, // izquierda
+            { dx: 1, dy: 0 }   // derecha
+        ];
+
+        // Encontrar edificios adyacentes no-vía
+        for (const dir of directions) {
+            const adjX = roadX + dir.dx;
+            const adjY = roadY + dir.dy;
+
+            if (city.map.esValida(adjX, adjY)) {
+                const adjBuilding = city.map.obtenerCelda(adjX, adjY);
+                if (adjBuilding && !(adjBuilding instanceof Road)) {
+                    // Verificar si este edificio tiene otras vías adyacentes además de la que se demuele
+                    if (!this.hasOtherRoadConnections(city, adjX, adjY, roadX, roadY)) {
+                        affectedBuildings.push(adjBuilding);
+                    }
+                }
+            }
+        }
+
+        return affectedBuildings;
+    }
+
+    // Verificar si un edificio tiene otras vías adyacentes además de la especificada
+    hasOtherRoadConnections(city, buildingX, buildingY, excludeRoadX, excludeRoadY) {
+        const directions = [
+            { dx: 0, dy: -1 },
+            { dx: 0, dy: 1 },
+            { dx: -1, dy: 0 },
+            { dx: 1, dy: 0 }
+        ];
+
+        for (const dir of directions) {
+            const adjX = buildingX + dir.dx;
+            const adjY = buildingY + dir.dy;
+
+            if (city.map.esValida(adjX, adjY)) {
+                const adjCell = city.map.obtenerCelda(adjX, adjY);
+                if (adjCell instanceof Road && !(adjX === excludeRoadX && adjY === excludeRoadY)) {
+                    return true; // Tiene otra vía adyacente
+                }
+            }
+        }
+
+        return false; // No tiene otras vías adyacentes
     }
 
     //puede servir para ver info del building
