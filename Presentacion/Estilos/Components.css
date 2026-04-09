@@ -49,6 +49,18 @@
   font-weight: 700;
 }
 
+.construction-nav button.active {
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+}
+
+#tabAll {
+  background-color: #0d6efd;
+  color: white;
+  border-color: #0d6efd;
+}
+
 .construction-tab-panels {
   display: flex;
   flex-direction: column;

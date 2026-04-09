@@ -276,6 +276,11 @@
       <section class="mb-4">
         <h3 class="h5 mb-3">Categorías</h3>
         <div class="row g-2 construction-nav">
+          <div class="col-12">
+            <button type="button" id="tabAll" data-tab-target="allTabPanel" class="btn btn-primary w-100">
+              Todas las construcciones
+            </button>
+          </div>
           <div class="col-6">
             <button type="button" id="tabResidential" data-tab-target="residentialTabPanel" class="btn btn-outline-primary w-100">
               Residencial
@@ -494,7 +499,6 @@
           <p class="mb-0">Ciudad real asociada: <strong id="weatherCityName">---</strong></p>
           <p class="mb-0">Temperatura: <strong id="weatherTemp">-- °C</strong></p>
           <p class="mb-0">Condición: <strong id="weatherCondition">---</strong></p>
-          <p class="mb-0">Humedad: <strong id="weatherHumidity">-- %</strong></p>
           <p class="mb-0">Viento: <strong id="weatherWind">-- km/h</strong></p>
           <p class="mb-0">Última actualización: <strong id="weatherUpdatedAt">---</strong></p>
         </div>
@@ -599,7 +603,7 @@
               <select id="regionSelect" name="region" required class="form-select">
                 <option value="">Seleccione una ciudad de Colombia</option>
               </select>
-              
+
               <label for="mapSizeSelect" class="form-label">Tamaño del mapa</label>
               <select id="mapSizeSelect" name="mapSize" required class="form-select">
                 <option value="15">15 x 15</option>

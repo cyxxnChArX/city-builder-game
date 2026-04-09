@@ -410,20 +410,43 @@ class UIController {
         if (routeStatusText) routeStatusText.textContent = `Estado: ${statusText}`;
     }
 
-    static renderWeather(weather) {
-        if (!weather) return;
-        
+    static renderWeather(weather, region = "---") {
         const tempEl = document.getElementById("weatherTemp");
         const windEl = document.getElementById("weatherWind");
-        const humidityEl = document.getElementById("weatherHumidity");
         const descEl = document.getElementById("weatherCondition");
+        const cityEl = document.getElementById("weatherCityName");
+        const updatedAtEl = document.getElementById("weatherUpdatedAt");
 
+        // Mostrar la ciudad/región
+        if (cityEl) cityEl.textContent = region;
+
+        if (!weather) {
+            // Mostrar valores por defecto si no hay clima
+            if (tempEl) tempEl.textContent = "-- °C";
+            if (windEl) windEl.textContent = "-- km/h";
+            if (descEl) descEl.textContent = "---";
+            if (updatedAtEl) updatedAtEl.textContent = "---";
+            return;
+        }
+
+        // Mostrar datos del clima
         if (tempEl) tempEl.textContent = `${weather.temperatura}°C`;
         if (windEl) windEl.textContent = `${weather.viento} km/h`;
-        if (humidityEl) humidityEl.textContent = `${weather.humedad}%`;
         if (descEl) descEl.textContent = weather.descripcion;
+        
+        // Mostrar fecha y hora de actualización
+        if (updatedAtEl) {
+            const now = new Date();
+            updatedAtEl.textContent = now.toLocaleString("es-CO", {
+                year: "numeric",
+                month: "2-digit",
+                day: "2-digit",
+                hour: "2-digit",
+                minute: "2-digit"
+            });
+        }
     }
-    
+
     static renderNews(noticias) {
         const newsList = document.getElementById("newsList");
         if (!newsList) return;

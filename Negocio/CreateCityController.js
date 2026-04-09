@@ -396,4 +396,55 @@ document.addEventListener("DOMContentLoaded", function () {
     if (btnRefreshNews) {
         btnRefreshNews.addEventListener("click", updateNews);
     }
+
+    // MANEJO DE TABS DE CONSTRUCCIÓN
+    const constructionTabs = document.querySelectorAll('[data-tab-target]');
+    const tabPanels = document.querySelectorAll('.tab-panel');
+
+    // Ocultar todos los paneles al inicio
+    tabPanels.forEach(panel => {
+        panel.style.display = 'none';
+    });
+
+    // Mostrar todos los paneles por defecto y marcar "Todas" como activo
+    tabPanels.forEach(panel => {
+        panel.style.display = 'block';
+    });
+    const tabAllBtn = document.getElementById('tabAll');
+    if (tabAllBtn) {
+        tabAllBtn.classList.add('active');
+    }
+
+    // Agregar event listeners a los botones de categoría
+    constructionTabs.forEach(tab => {
+        tab.addEventListener('click', (e) => {
+            e.preventDefault();
+
+            const targetPanelId = tab.dataset.tabTarget;
+
+            // Ocultar todos los paneles
+            tabPanels.forEach(panel => {
+                panel.style.display = 'none';
+            });
+
+            // Si es "Todas", mostrar todos los paneles
+            if (targetPanelId === 'allTabPanel') {
+                tabPanels.forEach(panel => {
+                    panel.style.display = 'block';
+                });
+            } else {
+                // Mostrar solo el panel seleccionado
+                const targetPanel = document.getElementById(targetPanelId);
+                if (targetPanel) {
+                    targetPanel.style.display = 'block';
+                }
+            }
+
+            // Cambiar el botón activo (visual feedback)
+            constructionTabs.forEach(btn => {
+                btn.classList.remove('active');
+            });
+            tab.classList.add('active');
+        });
+    });
 });
