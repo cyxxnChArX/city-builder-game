@@ -3,7 +3,6 @@ class UbicationService {
 
     static async getCoordenadasCiudad(nombreCiudad, pais = "Colombia") {
         try {
-            console.log("Buscando ciudad...");
 
             const query = `${nombreCiudad}, ${pais}`;
 
@@ -25,11 +24,6 @@ class UbicationService {
                 lat: parseFloat(resultado.lat),
                 lon: parseFloat(resultado.lon)
             };
-
-            console.log("Ubicación encontrada:");
-            console.log("Ciudad:", coordenadas.nombre);
-            console.log("Latitud:", coordenadas.lat);
-            console.log("Longitud:", coordenadas.lon);
 
             return coordenadas;
 

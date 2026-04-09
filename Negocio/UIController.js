@@ -423,6 +423,7 @@ class UIController {
         if (humidityEl) humidityEl.textContent = `${weather.humedad}%`;
         if (descEl) descEl.textContent = weather.descripcion;
     }
+    
     static renderNews(noticias) {
         const newsList = document.getElementById("newsList");
         if (!newsList) return;

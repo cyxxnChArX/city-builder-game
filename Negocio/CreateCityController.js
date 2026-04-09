@@ -142,6 +142,7 @@ document.addEventListener("DOMContentLoaded", function () {
             modal.show();
         });
     }
+
     const configForm = document.getElementById("configForm");
 
     if (configForm) {
@@ -275,7 +276,7 @@ document.addEventListener("DOMContentLoaded", function () {
         regionSelect.appendChild(option);
     });
 
-    //boton dle ranking 
+    //boton del ranking 
     const btnOpenRanking = document.getElementById("btnOpenRanking");
     const rankingModalElement = document.getElementById("rankingModal");
 
