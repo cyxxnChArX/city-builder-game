@@ -23,6 +23,7 @@ class MapController {
     static routeOriginBuilding = null;
     static routeDestinationBuilding = null;
     static currentRouteCells = [];
+    static uiInitialized = false;
 
     static zoomLevel = 1;
     static minZoom = 0.5;
@@ -184,6 +185,12 @@ class MapController {
     }
 
     static initUI() {
+        if (MapController.uiInitialized) {
+            return;
+        }
+
+        MapController.uiInitialized = true;
+
         document.querySelectorAll("[data-build-type]").forEach(btn => {
             btn.addEventListener("click", () => {
                 MapController.routeModeActive = false;

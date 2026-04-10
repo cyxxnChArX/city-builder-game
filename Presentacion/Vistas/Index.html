@@ -650,6 +650,14 @@
               <input type="number" id="citizenGrowthMaxInput" name="citizenGrowthMax" value="3" min="0" class="form-control" />
             </fieldset>
 
+            <fieldset class="mb-3">
+              <legend>Importar ciudad desde JSON</legend>
+
+              <label for="cityJsonFileInput" class="form-label">Archivo JSON de ciudad</label>
+              <input type="file" id="cityJsonFileInput" name="cityJsonFile" accept=".json,application/json" class="form-control" />
+              <p id="cityJsonStatus" class="mt-2 mb-0">Sin ciudad cargada.</p>
+            </fieldset>
+
             <fieldset>
               <legend>Cargar mapa desde archivo</legend>
 

@@ -24,6 +24,15 @@ document.addEventListener("DOMContentLoaded", function () {
 
         currentCity = city;
 
+        MapController.modo = null;
+        MapController.routeModeActive = false;
+        MapController.routeOriginBuilding = null;
+        MapController.routeDestinationBuilding = null;
+        MapController.currentRouteCells = [];
+        MapController.selectedBuilding = null;
+        UIController.updateCurrentMode("Ninguno");
+        UIController.updateRouteInfo("sin seleccionar", "sin seleccionar", "inactivo");
+
         UIController.update(city);
         UIController.updatePauseButton(false);
 
@@ -64,6 +73,93 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //formulario
     const form = document.getElementById("citySetupForm");
+    const cityJsonFileInput = document.getElementById("cityJsonFileInput");
+    const cityJsonStatus = document.getElementById("cityJsonStatus");
+    const mapLoadStatus = document.getElementById("mapLoadStatus");
+
+    if (cityJsonFileInput) {
+        cityJsonFileInput.addEventListener("change", (event) => {
+            const file = event.target.files ? event.target.files[0] : null;
+            if (!file) {
+                cityJsonStatus.textContent = "No se seleccionó ningún archivo.";
+                return;
+            }
+
+            const reader = new FileReader();
+            reader.onload = () => {
+                try {
+                    const rawData = reader.result;
+                    const parsed = JSON.parse(rawData);
+                    const importedCity = StorageService.deserializeCity(parsed);
+
+                    if (!importedCity) {
+                        throw new Error("JSON de ciudad no válido.");
+                    }
+
+                    document.getElementById("cityNameInput").value = importedCity.nombre || "";
+                    document.getElementById("mayorNameInput").value = importedCity.alcalde || "";
+
+                    const regionSelectElement = document.getElementById("regionSelect");
+                    if (regionSelectElement) {
+                        const regionValue = importedCity.region || "";
+                        if (!regionSelectElement.querySelector(`option[value="${regionValue}"]`)) {
+                            const regionOption = document.createElement("option");
+                            regionOption.value = regionValue;
+                            regionOption.textContent = regionValue;
+                            regionSelectElement.appendChild(regionOption);
+                        }
+                        regionSelectElement.value = regionValue;
+                    }
+
+                    const mapSizeElement = document.getElementById("mapSizeSelect");
+                    if (mapSizeElement && importedCity.map && importedCity.map.ancho) {
+                        const sizeValue = importedCity.map.ancho.toString();
+                        if (mapSizeElement.querySelector(`option[value="${sizeValue}"]`)) {
+                            mapSizeElement.value = sizeValue;
+                        }
+                    }
+
+                    document.getElementById("initialMoneyInput").value = importedCity.resources?.dinero ?? 0;
+                    document.getElementById("initialElectricityInput").value = importedCity.resources?.electricidad ?? 0;
+                    document.getElementById("initialWaterInput").value = importedCity.resources?.agua ?? 0;
+                    document.getElementById("initialFoodInput").value = importedCity.resources?.alimentos ?? 0;
+                    document.getElementById("turnDurationInput").value = importedCity.config?.turnDuration ? importedCity.config.turnDuration / 1000 : 10;
+                    document.getElementById("citizenGrowthMinInput").value = importedCity.config?.minGrowth ?? 1;
+                    document.getElementById("citizenGrowthMaxInput").value = importedCity.config?.maxGrowth ?? 3;
+
+                    cityJsonStatus.textContent = `Ciudad cargada: ${importedCity.nombre || "(sin nombre)"}`;
+
+                    StorageService.saveGame(importedCity);
+                    ScoringSystem.updateCityScore(importedCity);
+                    RankingService.updateCityRanking(importedCity);
+                    renderLoadedCity(importedCity);
+                    startWeatherAutoUpdate();
+                    updateNews();
+
+                    const modalInstance = bootstrap.Modal.getInstance(document.getElementById("citySetupModal"));
+                    if (modalInstance) {
+                        modalInstance.hide();
+                    }
+
+                    alert("Ciudad importada y creada en la página correctamente.");
+                } catch (error) {
+                    console.error("Error cargando ciudad JSON:", error);
+                    cityJsonStatus.textContent = "Error al cargar el archivo JSON.";
+                    alert("No se pudo cargar la ciudad. Verifica que el archivo JSON sea válido.");
+                } finally {
+                    cityJsonFileInput.value = "";
+                }
+            };
+
+            reader.onerror = () => {
+                cityJsonStatus.textContent = "Error leyendo el archivo JSON.";
+                alert("Error leyendo el archivo JSON.");
+                cityJsonFileInput.value = "";
+            };
+
+            reader.readAsText(file, "UTF-8");
+        });
+    }
 
     form.addEventListener("submit", function (e) {
         e.preventDefault();
@@ -184,6 +280,18 @@ document.addEventListener("DOMContentLoaded", function () {
     const modalElement = document.getElementById("citySetupModal");
 
     btnNewCity.addEventListener("click", () => {
+        if (form) {
+            form.reset();
+        }
+
+        if (cityJsonStatus) {
+            cityJsonStatus.textContent = "Sin ciudad cargada.";
+        }
+
+        if (mapLoadStatus) {
+            mapLoadStatus.textContent = "Sin archivo seleccionado.";
+        }
+
         const modal = new bootstrap.Modal(modalElement);
         modal.show();
     });
