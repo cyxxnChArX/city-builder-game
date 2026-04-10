@@ -93,45 +93,40 @@ class UIController {
         const housingCapacityValue = document.getElementById("housingCapacityValue");
         const jobCapacityValue = document.getElementById("jobCapacityValue");
 
-        let residentialCount = 0;
-        let commercialCount = 0;
-        let industrialCount = 0;
-        let serviceCount = 0;
-        let parksCount = 0;
-        let roadsCount = 0;
+        const counts = {
+            Residencial: 0,
+            Comercial: 0,
+            Industrial: 0,
+            Servicio: 0,
+            Utilidad: 0,
+            Parque: 0,
+            "Vía": 0
+        };
+
         let housingCapacity = 0;
         let jobCapacity = 0;
-        let utilityPlantCount = 0;
 
         for (const building of city.buildings) {
-            if (building instanceof ResidentialBuilding) {
-                residentialCount++;
+            const type = building.getDisplayType ? building.getDisplayType() : building.constructor.name;
+            counts[type] = (counts[type] || 0) + 1;
+
+            if (building.capacidad) {
                 housingCapacity += building.capacidad;
-            } else if (building instanceof CommercialBuilding) {
-                commercialCount++;
+            }
+
+            if (building.capacidadEmpleo) {
                 jobCapacity += building.capacidadEmpleo;
-            } else if (building instanceof IndustrialBuilding) {
-                industrialCount++;
-                jobCapacity += building.capacidadEmpleo;
-            } else if (building instanceof ServiceBuilding) {
-                serviceCount++;
-            } else if (building instanceof Park) {
-                parksCount++;
-            } else if (building instanceof Road) {
-                roadsCount++;
-            } else if (building instanceof UtilityPlant) {
-                utilityPlantCount++;
             }
         }
 
         if (totalBuildingsValue) totalBuildingsValue.textContent = city.buildings.length;
-        if (residentialBuildingsValue) residentialBuildingsValue.textContent = residentialCount;
-        if (commercialBuildingsValue) commercialBuildingsValue.textContent = commercialCount;
-        if (industrialBuildingsValue) industrialBuildingsValue.textContent = industrialCount;
-        if (serviceBuildingsValue) serviceBuildingsValue.textContent = serviceCount;
-        if (utilityPlantBuildingsValue) utilityPlantBuildingsValue.textContent = utilityPlantCount;
-        if (parksValue) parksValue.textContent = parksCount;
-        if (roadsValue) roadsValue.textContent = roadsCount;
+        if (residentialBuildingsValue) residentialBuildingsValue.textContent = counts.Residencial || 0;
+        if (commercialBuildingsValue) commercialBuildingsValue.textContent = counts.Comercial || 0;
+        if (industrialBuildingsValue) industrialBuildingsValue.textContent = counts.Industrial || 0;
+        if (serviceBuildingsValue) serviceBuildingsValue.textContent = counts.Servicio || 0;
+        if (utilityPlantBuildingsValue) utilityPlantBuildingsValue.textContent = counts.Utilidad || 0;
+        if (parksValue) parksValue.textContent = counts.Parque || 0;
+        if (roadsValue) roadsValue.textContent = counts["Vía"] || 0;
         if (housingCapacityValue) housingCapacityValue.textContent = housingCapacity;
         if (jobCapacityValue) jobCapacityValue.textContent = jobCapacity;
     }
@@ -281,29 +276,12 @@ class UIController {
 
     static formatBuildingType(building) {
         if (!building) return "---";
-
-        if (building instanceof Road) return "Vía";
-        if (building instanceof ResidentialBuilding) return "Residencial";
-        if (building instanceof CommercialBuilding) return "Comercial";
-        if (building instanceof IndustrialBuilding) return "Industrial";
-        if (building instanceof ServiceBuilding) return "Servicio";
-        if (building instanceof UtilityPlant) return "Utilidad";
-        if (building instanceof Park) return "Parque";
-
-        return building.constructor.name;
+        return building.getDisplayType ? building.getDisplayType() : building.constructor.name;
     }
 
     static formatBuildingName(building) {
         if (!building) return "---";
-
-        if (building instanceof Road) return "Vía";
-        if (building instanceof Park) return "Parque";
-
-        const tipo = building.tipo || building.constructor.name;
-
-        return tipo
-            .replaceAll("_", " ")
-            .replace(/\b\w/g, char => char.toUpperCase());
+        return building.getDisplayName ? building.getDisplayName() : building.constructor.name;
     }
 
     static renderBuildingInfo(building) {

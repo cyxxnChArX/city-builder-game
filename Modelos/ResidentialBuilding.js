@@ -77,6 +77,14 @@ class ResidentialBuilding extends Building {
         this.residentes = [];
     }
 
+    getDisplayType() {
+        return "Residencial";
+    }
+
+    getDisplayName() {
+        return this.tipo === ResidentialBuilding.TIPOS.CASA ? "Casa" : "Apartamento";
+    }
+
 }
 
 export default ResidentialBuilding;

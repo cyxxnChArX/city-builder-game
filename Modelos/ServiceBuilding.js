@@ -41,6 +41,20 @@ class ServiceBuilding extends Building {
         this.consumoAgua = consumoAgua;
     }
 
+    getDisplayType() {
+        return "Servicio";
+    }
+
+    getDisplayName() {
+        const displayNames = {
+            [ServiceBuilding.TIPOS.POLICIA]: "Estación de Policía",
+            [ServiceBuilding.TIPOS.BOMBEROS]: "Estación de Bomberos",
+            [ServiceBuilding.TIPOS.HOSPITAL]: "Hospital"
+        };
+
+        return displayNames[this.tipo] || "Servicio";
+    }
+
 }
 
 export default ServiceBuilding;

@@ -39,6 +39,14 @@ class CommercialBuilding extends EmploymentBuilding {
         this.consumoElectricidad = consumoElectricidad;
     }
 
+    getDisplayType() {
+        return "Comercial";
+    }
+
+    getDisplayName() {
+        return this.tipo === CommercialBuilding.TIPOS.TIENDA ? "Tienda" : "Centro Comercial";
+    }
+
 }
 
 export default CommercialBuilding;

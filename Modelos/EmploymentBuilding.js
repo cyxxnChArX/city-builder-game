@@ -39,6 +39,14 @@ class EmploymentBuilding extends Building {
         this.empleados = [];
     }
 
+    getDisplayType() {
+        return "Empleo";
+    }
+
+    getDisplayName() {
+        return this.tipo || "Edificio de empleo";
+    }
+
 }
 
 export default EmploymentBuilding;

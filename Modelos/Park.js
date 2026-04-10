@@ -11,6 +11,14 @@ class Park extends Building {
         this.beneficioFelicidad = beneficioFelicidad;
     }
 
+    getDisplayType() {
+        return "Parque";
+    }
+
+    getDisplayName() {
+        return "Parque";
+    }
+
 }
 
 export default Park;

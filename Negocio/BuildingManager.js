@@ -23,12 +23,10 @@ class BuildingManager {
             return false;
         }
 
-        // Si no es Road, necesita via adyacente
-        if (!(building instanceof Road)) {
-            if (!city.map.hayViaAdyacente(x, y)) {
-                console.log("No hay via adyacente");
-                return false;
-            }
+        // Construcciones que requieren acceso por vía deben tener una vía adyacente
+        if (building.requiresRoad() && !city.map.hayViaAdyacente(x, y)) {
+            console.log("No hay via adyacente");
+            return false;
         }
         //si pasa las condiciones entonces:
         // Actualizar posicion del edificio

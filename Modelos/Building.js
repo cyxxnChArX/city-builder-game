@@ -9,9 +9,19 @@ class Building {
         this.costo = costo;
         this.x = x;
         this.y = y;
-        
-        // mantenimiento automatico para no definir una por una en cada clase
         this.costoMantenimiento = costo * 0.0001;
+    }
+
+    requiresRoad() {
+        return true;
+    }
+
+    getDisplayType() {
+        return this.constructor.name;
+    }
+
+    getDisplayName() {
+        return this.constructor.name;
     }
 
 }

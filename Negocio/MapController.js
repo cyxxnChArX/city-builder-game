@@ -305,10 +305,7 @@ class MapController {
     }
 
     static isSelectableBuildingForRoute(object) {
-        return (
-            object &&
-            !(object instanceof Road)
-        );
+        return object && object.requiresRoad && object.requiresRoad();
     }
 
     static getAdjacentRoad(building) {

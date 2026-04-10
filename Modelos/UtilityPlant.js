@@ -34,6 +34,14 @@ class UtilityPlant extends Building {
         this.consumoElectricidad = consumoElectricidad;
     }
 
+    getDisplayType() {
+        return "Utilidad";
+    }
+
+    getDisplayName() {
+        return this.tipo === UtilityPlant.TIPOS.PLANTA_ELECTRICA ? "Planta Eléctrica" : "Planta de Agua";
+    }
+
 }
 
 export default UtilityPlant;

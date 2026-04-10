@@ -42,6 +42,14 @@ class IndustrialBuilding extends EmploymentBuilding {
         this.consumoAgua = consumoAgua;
     }
 
+    getDisplayType() {
+        return "Industrial";
+    }
+
+    getDisplayName() {
+        return this.tipo === IndustrialBuilding.TIPOS.FABRICA ? "Fábrica" : "Granja";
+    }
+
 }
 
 export default IndustrialBuilding;
