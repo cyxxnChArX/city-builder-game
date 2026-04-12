@@ -262,13 +262,6 @@
   background: #f8fafc;
 }
 
-.news-item img {
-  width: 100%;
-  height: 160px;
-  object-fit: cover;
-  background: #cbd5e1;
-}
-
 .news-content {
   padding: 0.9rem;
 }
