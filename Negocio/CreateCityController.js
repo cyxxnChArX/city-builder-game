@@ -10,6 +10,7 @@ import ScoringSystem from "./ScoringSystem.js";
 import WeatherService from "../Datos/API's/WeatherService.js";
 import UbicationService from "../Datos/API's/UbicationService.js";
 import NewsService from "../Datos/API's/NewsService.js";
+import MapImportService from "../Datos/MapImportService.js";
 
 
 document.addEventListener("DOMContentLoaded", function () {
@@ -18,6 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
     let turnSystem = null;
     let weatherInterval = null;
     let newsService = new NewsService();
+    let pendingMapText = null;
 
     function renderLoadedCity(city) {
         if (!city) return;
@@ -73,143 +75,119 @@ document.addEventListener("DOMContentLoaded", function () {
 
     //formulario
     const form = document.getElementById("citySetupForm");
-    const cityJsonFileInput = document.getElementById("cityJsonFileInput");
-    const cityJsonStatus = document.getElementById("cityJsonStatus");
+    const mapFileInput = document.getElementById("mapFileInput");
     const mapLoadStatus = document.getElementById("mapLoadStatus");
+    const importSavedGameFileInput = document.getElementById("importSavedGameFileInput");
 
-    if (cityJsonFileInput) {
-        cityJsonFileInput.addEventListener("change", (event) => {
+    if (mapFileInput) {
+        mapFileInput.addEventListener("change", async (event) => {
             const file = event.target.files ? event.target.files[0] : null;
             if (!file) {
-                cityJsonStatus.textContent = "No se seleccionó ningún archivo.";
+                if (mapLoadStatus) mapLoadStatus.textContent = "No se seleccionó ningún archivo.";
+                pendingMapText = null;
                 return;
             }
 
-            const reader = new FileReader();
-            reader.onload = () => {
-                try {
-                    const rawData = reader.result;
-                    const parsed = JSON.parse(rawData);
-                    const importedCity = StorageService.deserializeCity(parsed);
+            try {
+                const text = await MapImportService.readTextFile(file);
+                const matrix = MapImportService.parseTextToMatrix(text);
+                MapImportService.validateMatrix(matrix);
 
-                    if (!importedCity) {
-                        throw new Error("JSON de ciudad no válido.");
-                    }
-
-                    document.getElementById("cityNameInput").value = importedCity.nombre || "";
-                    document.getElementById("mayorNameInput").value = importedCity.alcalde || "";
-
-                    const regionSelectElement = document.getElementById("regionSelect");
-                    if (regionSelectElement) {
-                        const regionValue = importedCity.region || "";
-                        if (!regionSelectElement.querySelector(`option[value="${regionValue}"]`)) {
-                            const regionOption = document.createElement("option");
-                            regionOption.value = regionValue;
-                            regionOption.textContent = regionValue;
-                            regionSelectElement.appendChild(regionOption);
-                        }
-                        regionSelectElement.value = regionValue;
-                    }
-
-                    const mapSizeElement = document.getElementById("mapSizeSelect");
-                    if (mapSizeElement && importedCity.map && importedCity.map.ancho) {
-                        const sizeValue = importedCity.map.ancho.toString();
-                        if (mapSizeElement.querySelector(`option[value="${sizeValue}"]`)) {
-                            mapSizeElement.value = sizeValue;
-                        }
-                    }
-
-                    document.getElementById("initialMoneyInput").value = importedCity.resources?.dinero ?? 0;
-                    document.getElementById("initialElectricityInput").value = importedCity.resources?.electricidad ?? 0;
-                    document.getElementById("initialWaterInput").value = importedCity.resources?.agua ?? 0;
-                    document.getElementById("initialFoodInput").value = importedCity.resources?.alimentos ?? 0;
-                    document.getElementById("turnDurationInput").value = importedCity.config?.turnDuration ? importedCity.config.turnDuration / 1000 : 10;
-                    document.getElementById("citizenGrowthMinInput").value = importedCity.config?.minGrowth ?? 1;
-                    document.getElementById("citizenGrowthMaxInput").value = importedCity.config?.maxGrowth ?? 3;
-
-                    cityJsonStatus.textContent = `Ciudad cargada: ${importedCity.nombre || "(sin nombre)"}`;
-
-                    StorageService.saveGame(importedCity);
-                    ScoringSystem.updateCityScore(importedCity);
-                    RankingService.updateCityRanking(importedCity);
-                    renderLoadedCity(importedCity);
-                    startWeatherAutoUpdate();
-                    updateNews();
-
-                    const modalInstance = bootstrap.Modal.getInstance(document.getElementById("citySetupModal"));
-                    if (modalInstance) {
-                        modalInstance.hide();
-                    }
-
-                    alert("Ciudad importada y creada en la página correctamente.");
-                } catch (error) {
-                    console.error("Error cargando ciudad JSON:", error);
-                    cityJsonStatus.textContent = "Error al cargar el archivo JSON.";
-                    alert("No se pudo cargar la ciudad. Verifica que el archivo JSON sea válido.");
-                } finally {
-                    cityJsonFileInput.value = "";
+                pendingMapText = text;
+                if (mapLoadStatus) {
+                    mapLoadStatus.textContent = `Mapa cargado: ${file.name} (${matrix[0].length} x ${matrix.length})`;
                 }
-            };
 
-            reader.onerror = () => {
-                cityJsonStatus.textContent = "Error leyendo el archivo JSON.";
-                alert("Error leyendo el archivo JSON.");
-                cityJsonFileInput.value = "";
-            };
-
-            reader.readAsText(file, "UTF-8");
+                const mapSizeElement = document.getElementById("mapSizeSelect");
+                if (mapSizeElement) {
+                    const width = matrix[0].length.toString();
+                    if (mapSizeElement.querySelector(`option[value="${width}"]`)) {
+                        mapSizeElement.value = width;
+                    }
+                }
+            } catch (error) {
+                console.error("Error cargando mapa .txt:", error);
+                pendingMapText = null;
+                if (mapLoadStatus) mapLoadStatus.textContent = "Archivo de mapa inválido.";
+                alert("No se pudo cargar el mapa. Verifica que el archivo .txt sea válido.");
+            }
         });
     }
 
-    form.addEventListener("submit", function (e) {
-        e.preventDefault();
+    if (form) {
+        form.addEventListener("submit", function (e) {
+            e.preventDefault();
 
-        const nombre = document.getElementById("cityNameInput").value.trim();
-        const alcalde = document.getElementById("mayorNameInput").value.trim();
-        const region = document.getElementById("regionSelect").value;
-        const size = parseInt(document.getElementById("mapSizeSelect").value);
+            try {
+                const nombre = document.getElementById("cityNameInput").value.trim();
+                const alcalde = document.getElementById("mayorNameInput").value.trim();
+                const region = document.getElementById("regionSelect").value;
+                const size = parseInt(document.getElementById("mapSizeSelect").value, 10);
 
-        //  PARAMETROS CONFIGURABLES
-        const min = parseInt(document.getElementById("citizenGrowthMinInput").value);
-        const max = parseInt(document.getElementById("citizenGrowthMaxInput").value);
-        const turnDuration = parseInt(document.getElementById("turnDurationInput").value) * 1000;
+                //  PARAMETROS CONFIGURABLES
+                const min = parseInt(document.getElementById("citizenGrowthMinInput").value, 10);
+                const max = parseInt(document.getElementById("citizenGrowthMaxInput").value, 10);
+                const turnDuration = parseInt(document.getElementById("turnDurationInput").value, 10) * 1000;
 
-        //  RECURSOS DESDE FORMULARIO
-        const money = parseInt(document.getElementById("initialMoneyInput").value);
-        const electricity = parseInt(document.getElementById("initialElectricityInput").value);
-        const water = parseInt(document.getElementById("initialWaterInput").value);
-        const food = parseInt(document.getElementById("initialFoodInput").value);
+                //  RECURSOS DESDE FORMULARIO
+                const money = parseInt(document.getElementById("initialMoneyInput").value, 10);
+                const electricity = parseInt(document.getElementById("initialElectricityInput").value, 10);
+                const water = parseInt(document.getElementById("initialWaterInput").value, 10);
+                const food = parseInt(document.getElementById("initialFoodInput").value, 10);
 
-        if (!nombre || !alcalde || !region || !size) {
-            alert("Completa todos los campos");
-            return;
-        }
+                if (!nombre || !alcalde || !region || !size) {
+                    alert("Completa todos los campos");
+                    return;
+                }
 
-        const map = new Map(size, size);
-        const resources = new Resources(money, electricity, water, food);
+                let city;
 
-        const city = new City(null, nombre, map, resources, alcalde);
-        city.region = region;
+                if (pendingMapText) {
+                    city = MapImportService.importCityFromText({
+                        fileContent: pendingMapText,
+                        cityId: null,
+                        cityName: nombre,
+                        region,
+                        initialMoney: money,
+                        initialElectricity: electricity,
+                        initialWater: water,
+                        initialFood: food
+                    });
+                } else {
+                    const map = new Map(size, size);
+                    const resources = new Resources(money, electricity, water, food);
+                    city = new City(null, nombre, map, resources, alcalde);
+                    city.region = region;
+                }
 
-        //para que se guarden estos valores de min y max aparte de la duracion del sistema al cargar
-        city.config = {
-            minGrowth: min,
-            maxGrowth: max,
-            turnDuration: turnDuration
-        };       
+                city.alcalde = alcalde;
 
-        StorageService.saveGame(city);
-        ScoringSystem.updateCityScore(city);
-        RankingService.updateCityRanking(city);
+                //para que se guarden estos valores de min y max aparte de la duracion del sistema al cargar
+                city.config = {
+                    minGrowth: min,
+                    maxGrowth: max,
+                    turnDuration: turnDuration
+                };
 
-        renderLoadedCity(city);
-        startWeatherAutoUpdate();
-        updateNews();
+                StorageService.saveGame(city);
+                ScoringSystem.updateCityScore(city);
+                RankingService.updateCityRanking(city);
 
-        console.log("Ciudad creada:", city);
+                renderLoadedCity(city);
+                startWeatherAutoUpdate();
+                updateNews();
 
-        alert("Ciudad creada correctamente");
-    });
+                console.log("Ciudad creada:", city);
+
+                alert("Ciudad creada correctamente");
+            } catch (error) {
+                console.error("Error creando la ciudad:", error);
+                alert(error.message || "Ocurrió un error al crear la ciudad. Revisa la consola.");
+            }
+        });
+    } else {
+        console.error("Formulario de creación de ciudad no encontrado: citySetupForm");
+    }
 
     // BOTÓN NUEVA CIUDAD
     const btnNewCity = document.getElementById("btnNewCity");
@@ -284,9 +262,7 @@ document.addEventListener("DOMContentLoaded", function () {
             form.reset();
         }
 
-        if (cityJsonStatus) {
-            cityJsonStatus.textContent = "Sin ciudad cargada.";
-        }
+        pendingMapText = null;
 
         if (mapLoadStatus) {
             mapLoadStatus.textContent = "Sin archivo seleccionado.";
@@ -295,6 +271,44 @@ document.addEventListener("DOMContentLoaded", function () {
         const modal = new bootstrap.Modal(modalElement);
         modal.show();
     });
+
+    const btnImportSavedGame = document.getElementById("btnImportSavedGame");
+    if (btnImportSavedGame && importSavedGameFileInput) {
+        btnImportSavedGame.addEventListener("click", () => {
+            importSavedGameFileInput.click();
+        });
+    }
+
+    if (importSavedGameFileInput) {
+        importSavedGameFileInput.addEventListener("change", async (event) => {
+            const file = event.target.files ? event.target.files[0] : null;
+            if (!file) {
+                alert("No se seleccionó ningún archivo.");
+                return;
+            }
+
+            try {
+                const text = await MapImportService.readTextFile(file);
+                const parsed = JSON.parse(text);
+                const importedCity = StorageService.deserializeCity(parsed);
+
+                if (!importedCity) {
+                    throw new Error("JSON de ciudad no válido.");
+                }
+
+                renderLoadedCity(importedCity);
+                startWeatherAutoUpdate();
+                updateNews();
+
+                alert(`Partida importada: ${importedCity.nombre}`);
+            } catch (error) {
+                console.error("Error importando partida guardada:", error);
+                alert("No se pudo importar la partida. Verifica que el archivo JSON sea válido.");
+            } finally {
+                importSavedGameFileInput.value = "";
+            }
+        });
+    }
 
     const btnContinueGame = document.getElementById("btnContinueGame");
     if (btnContinueGame) {
@@ -322,6 +336,19 @@ document.addEventListener("DOMContentLoaded", function () {
             }
 
             StorageService.downloadCityJSON(currentCity);
+        });
+    }
+
+    const btnExportMap = document.getElementById("btnExportMap");
+    if (btnExportMap) {
+        btnExportMap.addEventListener("click", () => {
+            if (!currentCity) {
+                alert("No hay una ciudad cargada para exportar el mapa.");
+                return;
+            }
+
+            const safeName = (currentCity.nombre || "mapa").toLowerCase().replace(/\s+/g, "_").replace(/[^a-z0-9_]/g, "");
+            MapImportService.downloadMapTXT(currentCity, `mapa_${safeName || "ciudad"}.txt`);
         });
     }
 
@@ -377,12 +404,16 @@ document.addEventListener("DOMContentLoaded", function () {
         "Manizales"
     ];
 
-    ciudades.forEach(ciudad => {
-        const option = document.createElement("option");
-        option.value = ciudad;
-        option.textContent = ciudad;
-        regionSelect.appendChild(option);
-    });
+    if (regionSelect) {
+        ciudades.forEach(ciudad => {
+            const option = document.createElement("option");
+            option.value = ciudad;
+            option.textContent = ciudad;
+            regionSelect.appendChild(option);
+        });
+    } else {
+        console.error("No se encontró el select de región: regionSelect");
+    }
 
     //boton del ranking 
     const btnOpenRanking = document.getElementById("btnOpenRanking");

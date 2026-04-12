@@ -154,6 +154,69 @@ class MapImportService {
         });
     }
 
+    static exportMapToText(cityOrMap) {
+        const mapInstance = cityOrMap.map ? cityOrMap.map : cityOrMap;
+        if (!mapInstance || !mapInstance.mapa) {
+            throw new Error("No hay un mapa válido para exportar.");
+        }
+
+        const lines = [];
+
+        for (let y = 0; y < mapInstance.alto; y++) {
+            const rowTokens = [];
+
+            for (let x = 0; x < mapInstance.ancho; x++) {
+                const cell = mapInstance.mapa[y][x];
+                rowTokens.push(this.getTokenFromCell(cell));
+            }
+
+            lines.push(rowTokens.join(" "));
+        }
+
+        return lines.join("\n");
+    }
+
+    static downloadMapTXT(cityOrMap, filename = "mapa.txt") {
+        const text = this.exportMapToText(cityOrMap);
+        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        const link = document.createElement("a");
+        link.href = URL.createObjectURL(blob);
+        link.download = filename;
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+        URL.revokeObjectURL(link.href);
+    }
+
+    static getTokenFromCell(cell) {
+        if (!cell) {
+            return "g";
+        }
+
+        const className = cell.constructor.name;
+        switch (className) {
+            case "Road":
+                return "r";
+            case "Park":
+                return "P1";
+            case "ResidentialBuilding":
+                return cell.tipo === ResidentialBuilding.TIPOS.CASA ? "R1" : "R2";
+            case "CommercialBuilding":
+                return cell.tipo === CommercialBuilding.TIPOS.TIENDA ? "C1" : "C2";
+            case "IndustrialBuilding":
+                return cell.tipo === IndustrialBuilding.TIPOS.FABRICA ? "I1" : "I2";
+            case "ServiceBuilding":
+                if (cell.tipo === ServiceBuilding.TIPOS.POLICIA) return "S1";
+                if (cell.tipo === ServiceBuilding.TIPOS.BOMBEROS) return "S2";
+                if (cell.tipo === ServiceBuilding.TIPOS.HOSPITAL) return "S3";
+                break;
+            case "UtilityPlant":
+                return cell.tipo === UtilityPlant.TIPOS.PLANTA_ELECTRICA ? "U1" : "U2";
+        }
+
+        return "g";
+    }
+
     static validateMatrix(matrix) {
         const rowCount = matrix.length;
 
@@ -194,6 +257,68 @@ class MapImportService {
                 }
             }
         }
+    }
+
+    static importCityFromText({
+        fileContent,
+        cityId,
+        cityName,
+        region = "",
+        initialMoney = 50000,
+        initialElectricity = 0,
+        initialWater = 0,
+        initialFood = 0
+    }) {
+        if (!fileContent || typeof fileContent !== "string") {
+            throw new Error("El contenido del archivo .txt está vacío o no es válido.");
+        }
+
+        const matrix = this.parseTextToMatrix(fileContent);
+        this.validateMatrix(matrix);
+
+        const height = matrix.length;
+        const width = matrix[0].length;
+
+        const mapInstance = new Map(width, height);
+        const resourcesInstance = new Resources(
+            initialMoney,
+            initialElectricity,
+            initialWater,
+            initialFood
+        );
+
+        const cityInstance = new City(
+            cityId,
+            cityName,
+            mapInstance,
+            resourcesInstance
+        );
+
+        cityInstance.region = region;
+        cityInstance.turno = 1;
+        cityInstance.puntaje = 0;
+        cityInstance.felicidadPromedio = 100;
+        cityInstance.createdAt = new Date().toISOString();
+        cityInstance.lastSavedAt = cityInstance.createdAt;
+
+        for (let y = 0; y < height; y++) {
+            for (let x = 0; x < width; x++) {
+                const token = matrix[y][x];
+                const element = this.createElementFromToken(token, x, y);
+
+                if (!element) {
+                    continue;
+                }
+
+                cityInstance.map.colocar(element, x, y);
+                cityInstance.agregarBuilding(element);
+            }
+        }
+
+        this.calculateInitialResources(cityInstance);
+        this.recalculateCityDerivedState(cityInstance);
+
+        return cityInstance;
     }
 
     // =========================================
