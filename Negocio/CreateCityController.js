@@ -143,12 +143,14 @@ document.addEventListener("DOMContentLoaded", function () {
                 let city;
 
                 if (pendingMapText) {
+                    const importedMoney = MapImportService.extractMoneyFromText(pendingMapText);
+
                     city = MapImportService.importCityFromText({
                         fileContent: pendingMapText,
                         cityId: null,
                         cityName: nombre,
                         region,
-                        initialMoney: money,
+                        initialMoney: importedMoney ?? money,
                         initialElectricity: electricity,
                         initialWater: water,
                         initialFood: food

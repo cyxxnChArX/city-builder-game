@@ -140,7 +140,13 @@ class MapImportService {
             throw new Error("El archivo no contiene datos de mapa.");
         }
 
-        return lines.map((line, rowIndex) => {
+        const mapLines = lines.filter(line => !/^money\s*=/i.test(line));
+
+        if (mapLines.length === 0) {
+            throw new Error("El archivo no contiene una matriz de mapa válida.");
+        }
+
+        return mapLines.map((line, rowIndex) => {
             const tokens = line
                 .split(/[\s,;|]+/)
                 .map(token => token.trim())
@@ -152,6 +158,18 @@ class MapImportService {
 
             return tokens;
         });
+    }
+
+    static calculateTotalBuildingCost(cityOrMap) {
+        const cityInstance = cityOrMap && cityOrMap.map ? cityOrMap : null;
+
+        if (!cityInstance || !Array.isArray(cityInstance.buildings)) {
+            return 0;
+        }
+
+        return cityInstance.buildings.reduce((total, building) => {
+            return total + (building?.costo || 0);
+        }, 0);
     }
 
     static exportMapToText(cityOrMap) {
@@ -177,8 +195,18 @@ class MapImportService {
     }
 
     static downloadMapTXT(cityOrMap, filename = "mapa.txt") {
-        const text = this.exportMapToText(cityOrMap);
-        const blob = new Blob([text], { type: "text/plain;charset=utf-8" });
+        const mapText = this.exportMapToText(cityOrMap);
+
+        let finalText = mapText;
+
+        if (cityOrMap && cityOrMap.map && cityOrMap.resources) {
+            const totalBuildingCost = this.calculateTotalBuildingCost(cityOrMap);
+            const adjustedMoney = (cityOrMap.resources.dinero || 0) + totalBuildingCost;
+
+            finalText = `money=${adjustedMoney}\n${mapText}`;
+        }
+
+        const blob = new Blob([finalText], { type: "text/plain;charset=utf-8" });
         const link = document.createElement("a");
         link.href = URL.createObjectURL(blob);
         link.download = filename;
@@ -393,10 +421,10 @@ class MapImportService {
     // =========================================
 
     static calculateInitialResources(city) {
-        let money = 50000;
-        let electricity = 0;
-        let water = 0;
-        let food = 0;
+        let money = Number(city.resources?.dinero ?? 50000);
+        let electricity = Number(city.resources?.electricidad ?? 0);
+        let water = Number(city.resources?.agua ?? 0);
+        let food = Number(city.resources?.alimentos ?? 0);
 
         city.buildings.forEach(b => {
             // COSTOS (inversión inicial)
@@ -432,6 +460,25 @@ class MapImportService {
         city.resources.electricidad = electricity;
         city.resources.agua = water;
         city.resources.alimentos = food;
+    }
+
+    static extractMoneyFromText(fileContent) {
+        if (!fileContent || typeof fileContent !== "string") {
+            return null;
+        }
+
+        const lines = fileContent.split(/\r?\n/);
+
+        for (const rawLine of lines) {
+            const line = rawLine.trim();
+            const match = line.match(/^money\s*=\s*(-?\d+(?:\.\d+)?)$/i);
+
+            if (match) {
+                return parseFloat(match[1]);
+            }
+        }
+
+        return null;
     }
 
     // =========================================
